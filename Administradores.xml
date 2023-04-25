@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<administradores>
+  <administrador id="1">
+    <usuario>admin1</usuario>
+    <contrasena>123456</contrasena>
+  </administrador>
+</administradores>
