@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<clientes>
+  <cliente>
+    <usuario>usuario1</usuario>
+    <contraseña>contraseña1</contraseña>
+  </cliente>
+  <cliente>
+    <usuario>usuario2</usuario>
+    <contraseña>contraseña2</contraseña>
+  </cliente>
+  <cliente>
+    <usuario>usuario3</usuario>
+    <contraseña>contraseña3</contraseña>
+  </cliente>
+</clientes>

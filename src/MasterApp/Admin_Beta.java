@@ -1,10 +1,11 @@
-/**
- * Esta clase es una prueba para comprobar que el validar datos funciona correctamente
- * Tambien voy a corrobar el paso de información entre archivos XML y GUI
- */
 package MasterApp;
 
+import ServerApp.Administrador;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import javafx.application.Application;
+import static javafx.application.Application.launch;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -54,6 +55,31 @@ public class Admin_Beta extends Application {
         // Crear la escena y agregarla al escenario
         Scene scene = new Scene(vbox, 400, 300);
         stage.setScene(scene);
+
+        // Crear el socket para conectarse al servidor
+        Socket socket = new Socket("localhost", 8080);
+
+        // Crear el stream de salida para enviar la información al servidor
+        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+
+        // Agregar la acción al botón de inicio de sesión para enviar la información al servidor
+        btnLogin.setOnAction(e -> {
+            try {
+                String username = txtUser.getText();
+                String password = txtPass.getText();
+
+                // Crear un objeto con la información de inicio de sesión y enviarlo al servidor
+                Administrador loginInfo = new Administrador(username, password);
+                out.writeObject(loginInfo);
+                out.flush();
+
+                // Limpiar los campos de usuario y contraseña
+                txtUser.clear();
+                txtPass.clear();
+            } catch (IOException ex) {
+                System.err.println("Error sending login info to server: " + ex.getMessage());
+            }
+        });
 
         // Mostrar la ventana
         stage.show();

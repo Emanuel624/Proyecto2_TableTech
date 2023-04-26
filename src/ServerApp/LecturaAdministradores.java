@@ -33,11 +33,11 @@ public class LecturaAdministradores {
                     Element elementoAdministrador = (Element) nodoAdministrador;
 
                     String id = elementoAdministrador.getAttribute("id");
-                    String usuario = elementoAdministrador.getElementsByTagName("usuario").item(0).getTextContent();
+                    String usuario = elementoAdministrador.getElementsByTagName("username").item(0).getTextContent();
                     String contrasena = elementoAdministrador.getElementsByTagName("contrasena").item(0).getTextContent();
 
                     System.out.println("Administrador con id " + id);
-                    System.out.println("Usuario: " + usuario);
+                    System.out.println("Username: " + usuario);
                     System.out.println("Contraseña: " + contrasena);
                 }
             }
