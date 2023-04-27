@@ -20,4 +20,10 @@ public class Administrador implements Serializable {
         return contrasena;
     }
 
+    public void setUsername (String a){
+        username = a;
+    }
+    public void setContrasena (String b){
+        contrasena = b;
+    }
 }
