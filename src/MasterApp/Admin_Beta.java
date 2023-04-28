@@ -20,6 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+
 public class Admin_Beta extends Application {
     
     @Override
@@ -47,7 +48,7 @@ public class Admin_Beta extends Application {
         // Crear un contenedor para los botones
         HBox hboxButtons = new HBox(btnLogin, btnRegistrer);
         hboxButtons.setSpacing(10);
-        hboxButtons.setAlignment(Pos.CENTER);
+        hboxButtons.setAlignment(Pos.CENTER); 
 
         // Crear un contenedor para todos los nodos
         VBox vbox = new VBox(lblTitle, hboxUser, hboxPass, hboxButtons);

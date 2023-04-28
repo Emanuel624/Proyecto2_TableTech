@@ -19,5 +19,4 @@ public class AgregarAdmins_Alpha implements Serializable {
     public String getContrasena() {
         return contrasena;
     }
-
 }
