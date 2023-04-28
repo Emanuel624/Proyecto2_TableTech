@@ -1,10 +1,10 @@
 package ServerApp;
 
-public class AVLTree {
+public class AvlTree {
      private AvlNode rootNode;
 
         //Constructor to set null value to the rootNode
-        public AVLTree() {
+        public AvlTree() {
             rootNode = null;
         }
 

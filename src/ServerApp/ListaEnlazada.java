@@ -38,7 +38,7 @@ public class ListaEnlazada<C extends Comparable<? super C>> {
      *
      * @param data celda
      */
-    public void insertFirst(C data) {
+    public void add(C data) {
         NodeLista<C> newNode = new NodeLista<C>(data);
         newNode.setNext(this.head);;
         this.head = newNode;

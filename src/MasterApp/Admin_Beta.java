@@ -95,8 +95,7 @@ public class Admin_Beta extends Application {
                     Object obj = in.readObject();
 
                     // Verificar si el objeto recibido es un mensaje de éxito de inicio de sesión
-                    if (obj instanceof Boolean) {
-                        Boolean loginSuccess = (Boolean) obj;
+                    if (obj instanceof Boolean loginSuccess) {
                         if (loginSuccess) {
                             // Si el inicio de sesión fue exitoso, mostrar un mensaje de éxito y cerrar la ventana
                             Platform.runLater(() -> {
