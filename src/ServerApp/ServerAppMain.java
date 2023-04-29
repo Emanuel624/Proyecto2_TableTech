@@ -21,19 +21,31 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import ClientApp.Cliente;
+
 public class ServerAppMain {
     public static void main(String[] args) throws ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException {
         
-        //Elementos necesario para la lectura del archivo XML dentro del server App
+        // Elementos necesario para la lectura del archivo XML dentro del server App
         File xmlFile = new File("administradores.xml");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         
+        // Elementos necesarios para la lectura del archivo XML de clientes dentro del server App
+        File xmlFileClientes = new File("clientes.xml");
+        DocumentBuilderFactory factoryClientes = DocumentBuilderFactory.newInstance();
+        BinaryTree<String> treeClientes = new BinaryTree<>();
+        
         try {
-            //Construccion de parametros necesarios para contruir herramientas para recorrer el archivo
+            // Construccion de parametros necesarios para contruir herramientas para recorrer el archivo de administradores
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(xmlFile);
             doc.getDocumentElement().normalize();
             
+            // Construcción de parámetros necesarios para construir herramientas para recorrer el archivo de clientes
+            DocumentBuilder builderClientes = factoryClientes.newDocumentBuilder();
+            Document docClientes = builderClientes.parse(xmlFileClientes);
+            docClientes.getDocumentElement().normalize();
+
             NodeList nodeList = doc.getElementsByTagName("administrador");
             BinaryTree<String> tree = new BinaryTree<>();
             
@@ -44,8 +56,17 @@ public class ServerAppMain {
                 String data = username + ":" + contrasena;
                 tree.insert(data);
             }
-               
-            
+
+            NodeList nodeListClientes = docClientes.getElementsByTagName("cliente");
+
+            for (int i = 0; i < nodeListClientes.getLength(); i++) {
+                Element element = (Element) nodeListClientes.item(i);
+                String username = element.getElementsByTagName("username").item(0).getTextContent();
+                String contrasena = element.getElementsByTagName("contrasena").item(0).getTextContent();
+                String data = username + ":" + contrasena;
+                treeClientes.insert(data);
+            }
+
             // Crear el socket del servidor en el puerto 8080
             ServerSocket serverSocket = new ServerSocket(8080);
             System.out.println("Servidor iniciado");
@@ -63,6 +84,11 @@ public class ServerAppMain {
                 while (true) {
                     // Leer la información de inicio de sesión y mostrarla en la consola
                     Object obj = in.readObject();
+                    if (obj == null) {
+                    System.err.println("Se recibió un objeto nulo en la solicitud de inicio de sesión");
+                    break;
+                }
+                    System.out.println("Objeto recibido: " + obj.getClass().getName());
                     if (obj instanceof Administrador) {
                         Administrador loginInfo = (Administrador) obj;
                         System.out.println("Se recibió información de inicio de sesión: " + loginInfo.getUsername() + ":" + loginInfo.getContrasena());
@@ -79,6 +105,25 @@ public class ServerAppMain {
                             break; // Salir del ciclo interno
                         }
                         
+                    System.out.println("Antes de verificar si obj es una instancia de Cliente");    
+                    } else if (obj instanceof Cliente) {
+                        System.out.println("Después de verificar si obj es una instancia de Cliente");
+                        Cliente loginInfoCliente = (Cliente) obj;
+                        System.out.println("Se recibió información de inicio de sesión de cliente: " + loginInfoCliente.getUsername() + ":" + loginInfoCliente.getContrasena());
+
+                        // Buscar el elemento en el árbol de clientes
+                        System.out.println("Antes de buscar el elemento en el árbol");
+                        boolean encontradoCliente = treeClientes.contains(loginInfoCliente.getUsername() + ":" + loginInfoCliente.getContrasena());
+                        System.out.println("Después de buscar el elemento en el árbol");
+                        // Enviar la respuesta al cliente
+                        out.writeObject(encontradoCliente);
+                        out.flush();
+
+                        // Verificar si se recibió el comando de salida
+                        if (loginInfoCliente.getUsername().equals("exit") && loginInfoCliente.getContrasena().equals("exit")) {
+                            break; // Salir del ciclo interno
+                        }
+                        System.out.println("Respuesta enviada al cliente: " + encontradoCliente);
                     } else if (obj instanceof AgregarAdmins_Alpha) {
                         AgregarAdmins_Alpha registrerInfo = (AgregarAdmins_Alpha) obj;
                         System.out.println("Se recibió información para agregar un nuevo administrador: " + registrerInfo.getUsername() + ":" + registrerInfo.getContrasena());
@@ -116,8 +161,13 @@ public class ServerAppMain {
                 socket.close();
                 System.out.println("Cliente desconocetado del servidor");
             }
-        } catch (IOException | ClassNotFoundException ex) {
-            System.err.println("Error handling login request: " + ex.getMessage());
+        } catch (NullPointerException ex) {
+    System.err.println("Error handling login request due to null value: " + ex.getMessage());
+    ex.printStackTrace();
+    System.err.println("Last object received before exception: " + "");
+} catch (IOException | ClassNotFoundException ex) {
+    System.err.println("Error handling login request: " + ex.getMessage());
+    ex.printStackTrace();
         }
     }
 }
