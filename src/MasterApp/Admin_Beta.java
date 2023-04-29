@@ -85,6 +85,7 @@ public class Admin_Beta extends Application {
             }
         });
         
+        //¿?
         Thread thread = new Thread(() -> {
             try {
                 // Crear el stream de entrada para recibir información del servidor
