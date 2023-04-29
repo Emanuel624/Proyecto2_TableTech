@@ -1,24 +1,18 @@
 package ServerApp;
 
 import MasterApp.Platillos;
-import com.github.cliftonlabs.json_simple.JsonArray;
-import com.github.cliftonlabs.json_simple.JsonException;
-import com.github.cliftonlabs.json_simple.JsonObject;
-import com.github.cliftonlabs.json_simple.Jsoner;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Iterator;
+
 
 public class LeerJson {
     public static void main(String[] args) {
+        //HOLA
 
         AvlTree<String> avlTree = new AvlTree<>();
         java.util.ArrayList<Platillos> listaPlatillos;
