@@ -1,17 +1,18 @@
 package ServerApp;
 
-public class AvlNode {
-    int element;
-    AvlNode leftChild;
-    AvlNode rightChild;
+public class AvlNode<T> {
+    T element;
+    AvlNode<T> leftChild;
+    AvlNode<T> rightChild;
     int height;
-    public AvlNode(int element) {
+    public AvlNode(T element) {
         this(element, null, null);
     }
-    public AvlNode(int element, AvlNode left, AvlNode right) {
+    public AvlNode(T element, AvlNode<T> left, AvlNode<T> right) {
         this.element = element;
         this.leftChild = left;
         this.rightChild = right;
         this.height = 0;
     }
+
 }
