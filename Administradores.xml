@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<administradores>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><administradores>
   <administrador>
     <username>admin1</username>
     <contrasena>123456</contrasena>
   </administrador>
-</administradores>
+<administrador><username>admin2</username><contrasena>admin2</contrasena></administrador></administradores>

@@ -5,7 +5,6 @@ package ClientApp;
 
 import ServerApp.Administrador;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -19,6 +18,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import ClientApp.Cliente;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import javafx.application.Platform;
+
 
 public class Client_Beta extends Application {
 
@@ -57,12 +61,50 @@ public class Client_Beta extends Application {
         // Crear la escena y agregarla al escenario
         Scene scene = new Scene(vbox, 400, 300);
         stage.setScene(scene);
+        Socket socket = new Socket("localhost", 8080);
+        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
+        // Agregar manejador de eventos al botón Iniciar Sesión
+        btnLogin.setOnAction(event -> {
+            try{
+            String username = txtUser.getText();
+            String contrasena = txtPass.getText();
+            Cliente cliente = new Cliente(username, contrasena);
+            out.writeObject(cliente);
+            out.flush();
+        } catch (IOException ex) {
+                System.err.println("Error sending login info to server: " + ex.getMessage());
+            }
+        });
+            Thread thread = new Thread(() -> {
+            try {
+                // Crear el stream de entrada para recibir la respuesta del servidor
+                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+                // Leer la respuesta del servidor y mostrarla en la consola
+                while(true){
+                boolean loginSuccess = (boolean) in.readObject();
+                Platform.runLater(() -> {
+                if (loginSuccess) {
+                    System.out.println("Inicio de sesión exitoso");
+                    // Aquí puedes agregar el código para manejar un inicio de sesión exitoso
+                } else {
+                    System.out.println("Inicio de sesión fallido");
+                    // Aquí puedes agregar el código para manejar un inicio de sesión fallido
+                }});
+
+               
+            }
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
+            
+        thread.start();
         stage.show();
     }
+               
 
     public static void main(String[] args) {
         launch(args);
     }
 }
-
