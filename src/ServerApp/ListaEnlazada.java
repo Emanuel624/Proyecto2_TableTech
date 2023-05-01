@@ -13,7 +13,7 @@ public class ListaEnlazada<C> {
         this.head = null;
         this.size = 0;
 
-    }
+    } //Hola aaa
 
     /**
      * metodo que verifica si la lista esta vacia

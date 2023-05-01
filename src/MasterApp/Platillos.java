@@ -14,6 +14,7 @@ public class Platillos implements Serializable {
         this.tiempoPreparacion = tiempoPreparacion;
         this.precio = precio;
     }
+    //Hola
     public void setNombre(String a){
         nombre = a;
     }

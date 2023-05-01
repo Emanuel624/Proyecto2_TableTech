@@ -173,7 +173,7 @@ public class ServerAppMain {
                             e.printStackTrace();
                         }
                     }
-                }
+                }//hola
 
 
                 // Cerrar el stream y el socket (Si se cierra la aplicación tambien se cierra a la fuerza)
