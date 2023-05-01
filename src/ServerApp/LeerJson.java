@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-
+/*
 public class LeerJson {
     public static void main(String[] args) {
         //HOLA
@@ -22,7 +22,7 @@ public class LeerJson {
             Gson gson = new Gson();
             listaPlatillos = gson.fromJson(fileReader,type);
             fileReader.close();
-            for (Platillos p : listaPlatillos){
+            //for (Platillos p : listaPlatillos){
                 System.out.println("nombre:"+ p.getNombre() + "" + "calorias:" + "" + p.getCantidadCalorias() + "precio:" + p.getPrecio()
                         + "tiempo:" + p.getTiempoPreparacion());
 
@@ -34,4 +34,6 @@ public class LeerJson {
         }
     }
 }
+
+ */
 

@@ -1,12 +1,10 @@
 package ServerApp;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.lang.reflect.Type;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -16,6 +14,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import MasterApp.Platillos;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -89,8 +91,7 @@ public class ServerAppMain {
                     break;
                 }
                     System.out.println("Objeto recibido: " + obj.getClass().getName());
-                    if (obj instanceof Administrador) {
-                        Administrador loginInfo = (Administrador) obj;
+                    if (obj instanceof Administrador loginInfo) {
                         System.out.println("Se recibió información de inicio de sesión: " + loginInfo.getUsername() + ":" + loginInfo.getContrasena());
 
                         // Buscar el elemento en el árbol
@@ -106,9 +107,8 @@ public class ServerAppMain {
                         }
                         
                     System.out.println("Antes de verificar si obj es una instancia de Cliente");    
-                    } else if (obj instanceof Cliente) {
+                    } else if (obj instanceof Cliente loginInfoCliente) {
                         System.out.println("Después de verificar si obj es una instancia de Cliente");
-                        Cliente loginInfoCliente = (Cliente) obj;
                         System.out.println("Se recibió información de inicio de sesión de cliente: " + loginInfoCliente.getUsername() + ":" + loginInfoCliente.getContrasena());
 
                         // Buscar el elemento en el árbol de clientes
@@ -124,8 +124,7 @@ public class ServerAppMain {
                             break; // Salir del ciclo interno
                         }
                         System.out.println("Respuesta enviada al cliente: " + encontradoCliente);
-                    } else if (obj instanceof AgregarAdmins_Alpha) {
-                        AgregarAdmins_Alpha registrerInfo = (AgregarAdmins_Alpha) obj;
+                    } else if (obj instanceof AgregarAdmins_Alpha registrerInfo) {
                         System.out.println("Se recibió información para agregar un nuevo administrador: " + registrerInfo.getUsername() + ":" + registrerInfo.getContrasena());
 
                         // Agregar el nuevo administrador al árbol
@@ -152,11 +151,32 @@ public class ServerAppMain {
                         // Enviar la respuesta al cliente
                         out.writeObject(true);
                         out.flush();
+                    } else if (obj instanceof Platillos nuevoPlatillo) {
+                        //recibir la info del nuevo platillo que se creo
+                        AvlTree<String> avlTreePlatillo = new AvlTree<>();
+                        String dataPlatillo =  nuevoPlatillo.getNombre() + nuevoPlatillo.getCantidadCalorias() + nuevoPlatillo.getTiempoPreparacion() + nuevoPlatillo.getPrecio();
+                        avlTreePlatillo.insertElement(dataPlatillo);
+
+                        //guardar el platillo a un archivo json
+                        try(FileReader reader = new FileReader("platillos.json")){
+                            Type platilloListType = new TypeToken<ArrayList<Platillos>>(){}.getType();
+                            Gson gson = new Gson();
+                            ArrayList<Platillos> listaPlatillos = gson.fromJson(reader, platilloListType);
+                            reader.close();
+                            listaPlatillos.add(new Platillos(nuevoPlatillo.getNombre(), nuevoPlatillo.getCantidadCalorias(), nuevoPlatillo.getTiempoPreparacion(), nuevoPlatillo.getPrecio()));
+                            FileWriter writer = new FileWriter("platillos.json");
+                            gson.toJson(listaPlatillos, writer);
+                            System.out.println("escrito");
+                            writer.close();
+
+                        }catch (IOException e){
+                            e.printStackTrace();
+                        }
                     }
                 }
 
 
-                // Cerrar el stream y el socket (Si se cierra la aplicación tambine se cierra a la fuerza)
+                // Cerrar el stream y el socket (Si se cierra la aplicación tambien se cierra a la fuerza)
                 in.close();
                 socket.close();
                 System.out.println("Cliente desconocetado del servidor");
@@ -165,7 +185,8 @@ public class ServerAppMain {
     System.err.println("Error handling login request due to null value: " + ex.getMessage());
     ex.printStackTrace();
     System.err.println("Last object received before exception: " + "");
-} catch (IOException | ClassNotFoundException ex) {
+}
+        catch (IOException | ClassNotFoundException ex) {
     System.err.println("Error handling login request: " + ex.getMessage());
     ex.printStackTrace();
         }

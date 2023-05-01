@@ -1,18 +1,18 @@
 package ServerApp;
 
 
+import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Spliterator;
-import java.util.function.Consumer;
 
-public class ArrayLista<E> implements Iterable<E> {
+
+public class ArrayLista<E> implements Serializable {
     //HOLA
-    private int size = 0;
+    private transient int size = 0;
     private static final int DEFAULT_CAPACITY = 10;
     private Object[] elements;
 
         public ArrayLista() {
+
             elements = new Object[DEFAULT_CAPACITY];
         }
 
@@ -26,21 +26,6 @@ public class ArrayLista<E> implements Iterable<E> {
                 int newSize = elements.length * 2;
                 elements = Arrays.copyOf(elements, newSize);
             }
-        @Override
-        public Iterator<E> iterator() {
-        return null;
-        }
-
-        @Override
-        public void forEach(Consumer<? super E> action) {
-        Iterable.super.forEach(action);
-        }
-
-        @Override
-        public Spliterator<E> spliterator() {
-            return Iterable.super.spliterator();
-     }
-    //return (E) elements[i];
 }
 
 

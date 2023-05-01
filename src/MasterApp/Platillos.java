@@ -1,6 +1,8 @@
 package MasterApp;
 
-public class Platillos {
+import java.io.Serializable;
+
+public class Platillos implements Serializable {
     private String nombre;
     private int cantidadCalorias;
     private int tiempoPreparacion;

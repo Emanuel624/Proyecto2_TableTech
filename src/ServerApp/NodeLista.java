@@ -1,6 +1,6 @@
 package ServerApp;
 
-public class NodeLista<C extends Comparable<? super C>> {
+public class NodeLista<C> {
 
     private C data;
     private NodeLista<C> next;
