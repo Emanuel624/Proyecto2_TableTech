@@ -2,7 +2,7 @@ package ServerApp;
 
 import java.util.function.Consumer;
 
-public class ListaEnlazada<C extends Comparable<? super C>> {
+public class ListaEnlazada<C> {
     private NodeLista<C> head;
     private int size;
 
@@ -13,7 +13,7 @@ public class ListaEnlazada<C extends Comparable<? super C>> {
         this.head = null;
         this.size = 0;
 
-    }
+    } //Hola aaa
 
     /**
      * metodo que verifica si la lista esta vacia
