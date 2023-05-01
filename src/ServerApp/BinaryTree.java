@@ -86,6 +86,28 @@ public class BinaryTree <T extends Comparable<? super T>>{
         return current;
     }
     
+    
+  public Node<T> find(T element) {
+    return find(element, root);
+}
+
+private Node<T> find(T element, Node<T> node) {
+    if (node == null) {
+        return null;
+    } else {
+        int compareResult = element.compareTo(node.element);
+
+        if (compareResult < 0) {
+            return find(element, node.left);
+        } else if (compareResult > 0) {
+            return find(element, node.right);
+        } else {
+            return node;
+        }
+    }
+}
+
+
     public Node<T> remove(T element, Node<T> node){
         if (node == null)
             throw new NoSuchElementException("Elemento no encontrado");
