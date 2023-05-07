@@ -1,8 +1,13 @@
 package ServerApp;
 
 import java.util.function.Consumer;
+import java.io.Serializable;
+
 
 public class ListaEnlazada<C> {
+
+public class ListaEnlazada<C> implements Serializable {
+
     private NodeLista<C> head;
     private int size;
 
@@ -96,6 +101,20 @@ public class ListaEnlazada<C> {
             }
         }
         return null;
+    }
+
+    public C[] toArray(C[] array) {
+        if (array.length < size) {
+            array = (C[]) java.lang.reflect.Array.newInstance(array.getClass().getComponentType(), size);
+        }
+
+        NodeLista<C> current = head;
+        for (int i = 0; i < size; i++) {
+            array[i] = current.getData();
+            current = current.getNext();
+        }
+
+        return array;
     }
 
     /**

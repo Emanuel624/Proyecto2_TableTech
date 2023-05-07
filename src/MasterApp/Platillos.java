@@ -39,4 +39,8 @@ public class Platillos implements Serializable {
     public int getPrecio (){
         return this.precio;
     }
+    @Override
+    public String toString() {
+    return this.nombre;
+    }
 }

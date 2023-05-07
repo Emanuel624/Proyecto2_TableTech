@@ -15,6 +15,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+
 import MasterApp.Platillos;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -22,10 +25,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
+import MasterApp.Pedido;
 import ClientApp.Cliente;
 
 public class ServerAppMain {
+    private static final Queue<Pedido> pedidosQueue = new Queue<>();
+    
     public static void main(String[] args) throws ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException {
         
         // Elementos necesario para la lectura del archivo XML dentro del server App
@@ -36,6 +41,7 @@ public class ServerAppMain {
         File xmlFileClientes = new File("clientes.xml");
         DocumentBuilderFactory factoryClientes = DocumentBuilderFactory.newInstance();
         BinaryTree<String> treeClientes = new BinaryTree<>();
+        
         
         try {
             // Construccion de parametros necesarios para contruir herramientas para recorrer el archivo de administradores
@@ -72,7 +78,8 @@ public class ServerAppMain {
             // Crear el socket del servidor en el puerto 8080
             ServerSocket serverSocket = new ServerSocket(8080);
             System.out.println("Servidor iniciado");
-
+            Thread procesarPedidosThread = new Thread(ServerAppMain::procesarPedidos);
+            procesarPedidosThread.start();
             while (true) {
                // Esperar por una conexión del cliente
                Socket socket = serverSocket.accept();
@@ -91,6 +98,19 @@ public class ServerAppMain {
                     break;
                 }
                     System.out.println("Objeto recibido: " + obj.getClass().getName());
+
+                    // Condición para verificar si el objeto recibido es un pedido
+                    if (obj instanceof Object[] pedido) {
+                    System.out.println("Se recibió un pedido:");
+                    for (Object platillo : pedido) {
+                        System.out.println(((Platillos) platillo).getNombre());
+                    }}
+                    // Parte para manejar el objeto Pedido
+                    if (obj instanceof Pedido) {
+                        Pedido pedido = (Pedido) obj;
+                        agregarPedido(pedido);
+                    }
+
                     if (obj instanceof Administrador loginInfo) {
                         System.out.println("Se recibió información de inicio de sesión: " + loginInfo.getUsername() + ":" + loginInfo.getContrasena());
 
@@ -106,7 +126,12 @@ public class ServerAppMain {
                             break; // Salir del ciclo interno
                         }
                         
+
                     System.out.println("Antes de verificar si obj es una instancia de Cliente");    
+
+                    System.out.println("Antes de verificar si obj es una instancia de Cliente");  
+                    
+
                     } else if (obj instanceof Cliente loginInfoCliente) {
                         System.out.println("Después de verificar si obj es una instancia de Cliente");
                         System.out.println("Se recibió información de inicio de sesión de cliente: " + loginInfoCliente.getUsername() + ":" + loginInfoCliente.getContrasena());
@@ -154,8 +179,10 @@ public class ServerAppMain {
                     } else if (obj instanceof Platillos nuevoPlatillo) {
                         //recibir la info del nuevo platillo que se creo
                         AvlTree<String> avlTreePlatillo = new AvlTree<>();
+
                         String dataPlatillo =  nuevoPlatillo.getNombre() + nuevoPlatillo.getCantidadCalorias() + nuevoPlatillo.getTiempoPreparacion() + nuevoPlatillo.getPrecio();
                         avlTreePlatillo.insertElement(dataPlatillo);
+
 
                         //guardar el platillo a un archivo json
                         try(FileReader reader = new FileReader("platillos.json")){
@@ -166,13 +193,26 @@ public class ServerAppMain {
                             listaPlatillos.add(new Platillos(nuevoPlatillo.getNombre(), nuevoPlatillo.getCantidadCalorias(), nuevoPlatillo.getTiempoPreparacion(), nuevoPlatillo.getPrecio()));
                             FileWriter writer = new FileWriter("platillos.json");
                             gson.toJson(listaPlatillos, writer);
+
                             System.out.println("escrito");
                             writer.close();
+
+                            writer.close();
+                            //recorrer la lista de platillos del json y guardar la info en un avl
+                            for (Platillos p : listaPlatillos) {
+                                String dataPlatillo = p.getNombre() + "" + p.getCantidadCalorias() + "" + p.getTiempoPreparacion()
+                                        + "" + p.getPrecio();
+                                avlTreePlatillo.insertElement(dataPlatillo);
+                                System.out.println(dataPlatillo);
+                            }
+
+
 
                         }catch (IOException e){
                             e.printStackTrace();
                         }
                     }
+
                 }
 
 
@@ -191,4 +231,80 @@ public class ServerAppMain {
     ex.printStackTrace();
         }
     }
+    
+
+private static void procesarPedidos() {
+    while (true) {
+        if (!pedidosQueue.isEmpty()) {
+            Pedido pedido = pedidosQueue.dequeue();
+            System.out.println("Procesando pedido:");
+            int totalPlatillos = pedido.getPlatillos().size();
+            AtomicInteger platillosPreparados = new AtomicInteger(0);
+            AtomicInteger rangoProgresoAnterior = new AtomicInteger(0);
+
+            pedido.getPlatillos().forEach(platillo -> {
+                System.out.println("Preparando: " + platillo.getNombre());
+                try {
+                    Thread.sleep(platillo.getTiempoPreparacion() * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                platillosPreparados.incrementAndGet();
+                int progreso = (platillosPreparados.get() * 100) / totalPlatillos;
+                pedido.setProgreso(progreso);
+                System.out.println("Progreso del pedido: " + progreso + "%");
+
+                int rangoProgresoActual = progreso / 25;
+                if (rangoProgresoActual > rangoProgresoAnterior.get()) {
+                    rangoProgresoAnterior.set(rangoProgresoActual);
+                    switch (rangoProgresoActual) {
+                        case 1:
+                            EncenderLuces25();
+                            break;
+                        case 2:
+                            EncenderLuces50();
+                            break;
+                        case 3:
+                            EncenderLuces75();
+                            break;
+                        case 4:
+                            EncenderLuces100();
+                            break;
+                    }
+                }
+            });
+        } else {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+private static void EncenderLuces25() {
+    System.out.println("Encendiendo luces al 25%");
+      // Implementar codigo de arduino
+}
+
+private static void EncenderLuces50() {
+    System.out.println("Encendiendo luces al 50%");
+    // Implementar codigo de arduino
+}
+
+private static void EncenderLuces75() {
+    System.out.println("Encendiendo luces al 75%");
+    // Implementar codigo de arduino
+}
+
+private static void EncenderLuces100() {
+    System.out.println("Encendiendo luces al 100%");
+    // Implementar codigo de arduino
+}
+
+public static void agregarPedido(Pedido pedido) {
+    pedidosQueue.enqueue(pedido);
+    System.out.println("Pedido encolado: " + pedido);
+}
 }

@@ -43,7 +43,9 @@ public class Admin_Beta extends Application {
         Button btnLogin = new Button("Iniciar Sesión");
         Button btnRegistrer = new Button("Registrate");
         Button btnAgregar = new Button("Agregar Platillo");
-        
+
+
+
         HBox hboxNombre = new HBox(lblNombre, txtNombre);
         hboxNombre.setSpacing(15);
         hboxNombre.setAlignment(Pos.TOP_RIGHT);
@@ -109,7 +111,7 @@ public class Admin_Beta extends Application {
                 System.err.println("Error sending login info to server: " + ex.getMessage());
             }
         });
-        
+       
         //¿?
         btnAgregar.setOnAction(event -> {
             try{
