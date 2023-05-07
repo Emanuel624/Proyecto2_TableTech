@@ -14,9 +14,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import java.util.concurrent.atomic.AtomicInteger;
-
 
 import MasterApp.Platillos;
 import com.google.gson.Gson;
@@ -98,7 +96,6 @@ public class ServerAppMain {
                     break;
                 }
                     System.out.println("Objeto recibido: " + obj.getClass().getName());
-
                     // Condición para verificar si el objeto recibido es un pedido
                     if (obj instanceof Object[] pedido) {
                     System.out.println("Se recibió un pedido:");
@@ -110,7 +107,6 @@ public class ServerAppMain {
                         Pedido pedido = (Pedido) obj;
                         agregarPedido(pedido);
                     }
-
                     if (obj instanceof Administrador loginInfo) {
                         System.out.println("Se recibió información de inicio de sesión: " + loginInfo.getUsername() + ":" + loginInfo.getContrasena());
 
@@ -126,12 +122,8 @@ public class ServerAppMain {
                             break; // Salir del ciclo interno
                         }
                         
-
-                    System.out.println("Antes de verificar si obj es una instancia de Cliente");    
-
                     System.out.println("Antes de verificar si obj es una instancia de Cliente");  
                     
-
                     } else if (obj instanceof Cliente loginInfoCliente) {
                         System.out.println("Después de verificar si obj es una instancia de Cliente");
                         System.out.println("Se recibió información de inicio de sesión de cliente: " + loginInfoCliente.getUsername() + ":" + loginInfoCliente.getContrasena());
@@ -180,10 +172,6 @@ public class ServerAppMain {
                         //recibir la info del nuevo platillo que se creo
                         AvlTree<String> avlTreePlatillo = new AvlTree<>();
 
-                        String dataPlatillo =  nuevoPlatillo.getNombre() + nuevoPlatillo.getCantidadCalorias() + nuevoPlatillo.getTiempoPreparacion() + nuevoPlatillo.getPrecio();
-                        avlTreePlatillo.insertElement(dataPlatillo);
-
-
                         //guardar el platillo a un archivo json
                         try(FileReader reader = new FileReader("platillos.json")){
                             Type platilloListType = new TypeToken<ArrayList<Platillos>>(){}.getType();
@@ -193,10 +181,6 @@ public class ServerAppMain {
                             listaPlatillos.add(new Platillos(nuevoPlatillo.getNombre(), nuevoPlatillo.getCantidadCalorias(), nuevoPlatillo.getTiempoPreparacion(), nuevoPlatillo.getPrecio()));
                             FileWriter writer = new FileWriter("platillos.json");
                             gson.toJson(listaPlatillos, writer);
-
-                            System.out.println("escrito");
-                            writer.close();
-
                             writer.close();
                             //recorrer la lista de platillos del json y guardar la info en un avl
                             for (Platillos p : listaPlatillos) {
@@ -205,7 +189,6 @@ public class ServerAppMain {
                                 avlTreePlatillo.insertElement(dataPlatillo);
                                 System.out.println(dataPlatillo);
                             }
-
 
 
                         }catch (IOException e){

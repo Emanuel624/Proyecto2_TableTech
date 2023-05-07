@@ -41,7 +41,7 @@ public class AvlTree<T extends Comparable<? super T>> {
     //create insertElement() method to insert data in the AVL Tree recursively
     private AvlNode<T> insertElement(T element, AvlNode<T> current) {
         if (current == null) {
-            current = new AvlNode<T>(element);
+            current = new AvlNode<>(element);
         } else if (element.compareTo(current.element) < 0) {
             current.leftChild = insertElement(element, current.leftChild);
             if (getHeight(current.leftChild) - getHeight(current.rightChild) == 2) {

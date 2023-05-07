@@ -2,7 +2,6 @@ package ServerApp;
 import java.io.Serializable;
 
 
-public class NodeLista<C> {
 
 public class NodeLista<C> implements Serializable{
 

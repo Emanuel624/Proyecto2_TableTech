@@ -3,25 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/ListaEnlazadaView.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/ArrayLista.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/Queue.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/Node.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/BinaryTree.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ClientApp/Cliente.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/Administrador.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/ListaEnlazada.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/MasterApp/Admin_Beta.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/AgregarAdmins_Alpha.java</file>
             <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/CrearJson.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ClientApp/Client_Beta.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/MasterApp/Platillos.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/LeerJson.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/NodeLista.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/ArduinoLEDControl.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/MasterApp/Pedido.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/ServerAppMain.java</file>
-            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/AvlNode.java</file>
+            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/AvlTree.java</file>
+            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/BinaryTree.java</file>
+            <file>file:/C:/Users/Extreme%20PC/Desktop/Proyecto2_TableTech/src/ServerApp/ListaEnlazada.java</file>
         </group>
     </open-files>
 </project-private>

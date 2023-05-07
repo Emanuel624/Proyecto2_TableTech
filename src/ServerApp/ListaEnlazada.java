@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 import java.io.Serializable;
 
 
-public class ListaEnlazada<C> {
 
 public class ListaEnlazada<C> implements Serializable {
 
