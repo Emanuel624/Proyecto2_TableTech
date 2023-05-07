@@ -1,46 +1,39 @@
 package ServerApp;
 
-import com.github.cliftonlabs.json_simple.JsonArray;
-import com.github.cliftonlabs.json_simple.JsonException;
-import com.github.cliftonlabs.json_simple.JsonObject;
-import com.github.cliftonlabs.json_simple.Jsoner;
-
+import MasterApp.Platillos;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.math.BigDecimal;
-import java.util.Iterator;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
+/*
 public class LeerJson {
     public static void main(String[] args) {
+        //HOLA
 
-        try (Reader reader = new FileReader("platillos.json")) {
+        AvlTree<String> avlTree = new AvlTree<>();
+        java.util.ArrayList<Platillos> listaPlatillos;
+        try {
+            FileReader fileReader = new FileReader("platillos.json");
+            Type type = new TypeToken<ArrayList<Platillos>>(){}.getType();
+            Gson gson = new Gson();
+            listaPlatillos = gson.fromJson(fileReader,type);
+            fileReader.close();
+            //for (Platillos p : listaPlatillos){
+                System.out.println("nombre:"+ p.getNombre() + "" + "calorias:" + "" + p.getCantidadCalorias() + "precio:" + p.getPrecio()
+                        + "tiempo:" + p.getTiempoPreparacion());
 
-            JsonArray jsonArray = (JsonArray) Jsoner.deserialize(reader);
-
-            for (Object obj: jsonArray){
-                JsonObject jsonObject = (JsonObject) obj;
-                System.out.println(obj);
-
-                String nombre = (String) jsonObject.get("nombre");
-                System.out.println("nombre:"+ "" + nombre);
-
-                BigDecimal calorias = (BigDecimal) jsonObject.get("cantidadCalorias");
-                System.out.println("calorias:" + "" + calorias);
-
-                BigDecimal precio = (BigDecimal) jsonObject.get("precio");
-                System.out.println("precio:" + "" + precio);
-
-                BigDecimal tiempo = (BigDecimal) jsonObject.get("tiempoPreparacion");
-                System.out.println("tiempo:" + "" + tiempo);
-
-        }
-        } catch (IOException e) {
+            }
+        }catch (FileNotFoundException e){
             e.printStackTrace();
-        } catch (JsonException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-    }
+    }//hola
 }
+
+ */
 

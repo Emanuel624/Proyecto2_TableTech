@@ -1,6 +1,8 @@
 package MasterApp;
 
-public class Platillos {
+import java.io.Serializable;
+
+public class Platillos implements Serializable {
     private String nombre;
     private int cantidadCalorias;
     private int tiempoPreparacion;
@@ -12,6 +14,7 @@ public class Platillos {
         this.tiempoPreparacion = tiempoPreparacion;
         this.precio = precio;
     }
+    //Hola
     public void setNombre(String a){
         nombre = a;
     }
@@ -35,5 +38,9 @@ public class Platillos {
     }
     public int getPrecio (){
         return this.precio;
+    }
+    @Override
+    public String toString() {
+    return this.nombre;
     }
 }

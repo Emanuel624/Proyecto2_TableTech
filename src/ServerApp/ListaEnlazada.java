@@ -1,8 +1,9 @@
 package ServerApp;
 
 import java.util.function.Consumer;
+import java.io.Serializable;
 
-public class ListaEnlazada<C extends Comparable<? super C>> {
+public class ListaEnlazada<C> implements Serializable {
     private NodeLista<C> head;
     private int size;
 
@@ -13,7 +14,7 @@ public class ListaEnlazada<C extends Comparable<? super C>> {
         this.head = null;
         this.size = 0;
 
-    }
+    } //Hola aaa
 
     /**
      * metodo que verifica si la lista esta vacia
@@ -96,6 +97,20 @@ public class ListaEnlazada<C extends Comparable<? super C>> {
             }
         }
         return null;
+    }
+
+    public C[] toArray(C[] array) {
+        if (array.length < size) {
+            array = (C[]) java.lang.reflect.Array.newInstance(array.getClass().getComponentType(), size);
+        }
+
+        NodeLista<C> current = head;
+        for (int i = 0; i < size; i++) {
+            array[i] = current.getData();
+            current = current.getNext();
+        }
+
+        return array;
     }
 
     /**
