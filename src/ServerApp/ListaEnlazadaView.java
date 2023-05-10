@@ -1,11 +1,14 @@
 package ServerApp;
 
+import java.util.ArrayList;
+import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 
 public class ListaEnlazadaView<C> extends ListaEnlazada<C> {
     private ListView<C> listView;
+    private ObservableList<C> observableList;
 
     public ListaEnlazadaView() {
         super();
@@ -29,9 +32,9 @@ public class ListaEnlazadaView<C> extends ListaEnlazada<C> {
     }
     @Override
     public NodeLista<C> deleteFirst() {
-        NodeLista<C> deletedNode = super.deleteFirst();
-        updateListView();
-        return deletedNode;
+    NodeLista<C> deletedNode = super.deleteFirst();
+    updateListView();
+    return deletedNode;
     }
 
     @Override
@@ -46,4 +49,28 @@ public class ListaEnlazadaView<C> extends ListaEnlazada<C> {
         forEach(observableList::add);
         listView.setItems(observableList);
     }
-}
+    public void setListaEnlazada(ListaEnlazada<C> lista) {
+        listView.getItems().clear();
+        if (lista != null) {
+            lista.forEach(item -> listView.getItems().add(item));
+        }
+    }
+
+    public void remove(C item) {
+        listView.getItems().remove(item);
+    }
+
+public void setItems(ObservableList<C> items) {
+        listView.setItems(items);
+    }
+public ObservableList<C> getObservableList() {
+        ObservableList<C> observableList = FXCollections.observableArrayList();
+        forEach(observableList::add);
+        return observableList;
+    }
+public void refresh() {
+        // Limpiar y volver a agregar los elementos a la lista observable
+        List<C> tempList = new ArrayList<>(observableList);
+        observableList.clear();
+        observableList.addAll(tempList);
+    }}

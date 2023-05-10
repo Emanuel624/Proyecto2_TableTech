@@ -21,6 +21,17 @@ public Pedido(ListaEnlazada<Platillos> platillos) {
         tiempoTotal += platillo.getTiempoPreparacion();
     });
 }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ID Pedido: ").append(id).append(" - Platillos:\n");
+
+        platillos.forEach(platillo -> {
+            sb.append("\t").append(platillo.getNombre()).append('\n');
+        });
+
+        return sb.toString();
+    }
 
     public int getId() {
         return id;

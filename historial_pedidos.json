@@ -1,0 +1,202 @@
+[
+  {
+    "id": 0,
+    "platillos": {
+      "head": {
+        "data": {
+          "nombre": "Gallo pinto",
+          "cantidadCalorias": 150,
+          "tiempoPreparacion": 6,
+          "precio": 200
+        }
+      },
+      "size": 1
+    },
+    "tiempoTotal": 6,
+    "progreso": 0,
+    "estado": "En preparación"
+  },
+  {
+    "id": 0,
+    "platillos": {
+      "head": {
+        "data": {
+          "nombre": "Gallo pinto",
+          "cantidadCalorias": 150,
+          "tiempoPreparacion": 6,
+          "precio": 200
+        },
+        "next": {
+          "data": {
+            "nombre": "Tacos al pastor",
+            "cantidadCalorias": 200,
+            "tiempoPreparacion": 5,
+            "precio": 250
+          }
+        }
+      },
+      "size": 2
+    },
+    "tiempoTotal": 11,
+    "progreso": 0,
+    "estado": "En preparación"
+  },
+  {
+    "id": 0,
+    "platillos": {
+      "head": {
+        "data": {
+          "nombre": "Gallo pinto",
+          "cantidadCalorias": 150,
+          "tiempoPreparacion": 6,
+          "precio": 200
+        },
+        "next": {
+          "data": {
+            "nombre": "Tacos al pastor",
+            "cantidadCalorias": 200,
+            "tiempoPreparacion": 5,
+            "precio": 250
+          }
+        }
+      },
+      "size": 2
+    },
+    "tiempoTotal": 11,
+    "progreso": 0,
+    "estado": "En preparación"
+  },
+  {
+    "id": 0,
+    "platillos": {
+      "head": {
+        "data": {
+          "nombre": "Gallo pinto",
+          "cantidadCalorias": 150,
+          "tiempoPreparacion": 6,
+          "precio": 200
+        },
+        "next": {
+          "data": {
+            "nombre": "Tacos al pastor",
+            "cantidadCalorias": 200,
+            "tiempoPreparacion": 5,
+            "precio": 250
+          }
+        }
+      },
+      "size": 2
+    },
+    "tiempoTotal": 11,
+    "progreso": 0,
+    "estado": "En preparación"
+  },
+  {
+    "id": 0,
+    "platillos": {
+      "head": {
+        "data": {
+          "nombre": "Gallo pinto",
+          "cantidadCalorias": 150,
+          "tiempoPreparacion": 6,
+          "precio": 200
+        },
+        "next": {
+          "data": {
+            "nombre": "Tacos al pastor",
+            "cantidadCalorias": 200,
+            "tiempoPreparacion": 5,
+            "precio": 250
+          }
+        }
+      },
+      "size": 2
+    },
+    "tiempoTotal": 11,
+    "progreso": 0,
+    "estado": "En preparación"
+  },
+  {
+    "id": 0,
+    "platillos": {
+      "head": {
+        "data": {
+          "nombre": "Gallo pinto",
+          "cantidadCalorias": 150,
+          "tiempoPreparacion": 6,
+          "precio": 200
+        },
+        "next": {
+          "data": {
+            "nombre": "Tacos al pastor",
+            "cantidadCalorias": 200,
+            "tiempoPreparacion": 5,
+            "precio": 250
+          }
+        }
+      },
+      "size": 2
+    },
+    "tiempoTotal": 11,
+    "progreso": 0,
+    "estado": "En preparación"
+  },
+  {
+    "id": 0,
+    "platillos": {
+      "head": {
+        "data": {
+          "nombre": "Gallo pinto",
+          "cantidadCalorias": 150,
+          "tiempoPreparacion": 6,
+          "precio": 200
+        },
+        "next": {
+          "data": {
+            "nombre": "Tacos al pastor",
+            "cantidadCalorias": 200,
+            "tiempoPreparacion": 5,
+            "precio": 250
+          },
+          "next": {
+            "data": {
+              "nombre": "Pad Thai",
+              "cantidadCalorias": 400,
+              "tiempoPreparacion": 8,
+              "precio": 300
+            },
+            "next": {
+              "data": {
+                "nombre": "Pizza Margherita",
+                "cantidadCalorias": 300,
+                "tiempoPreparacion": 10,
+                "precio": 350
+              }
+            }
+          }
+        }
+      },
+      "size": 4
+    },
+    "tiempoTotal": 29,
+    "progreso": 0,
+    "estado": "En preparación"
+  },
+  {
+    "id": 0,
+    "platillos": {
+      "head": {
+        "data": {
+          "nombre": "Huevo",
+          "cantidadCalorias": 1,
+          "tiempoPreparacion": 10,
+          "precio": 10
+        }
+      },
+      "size": 1
+    },
+    "tiempoTotal": 10,
+    "progreso": 0,
+    "estado": "En preparación"
+  }
+]

@@ -128,6 +128,7 @@ public class ListaEnlazada<C> implements Serializable {
             action.accept(current.getData());
         }
     }
+
     
     public Iterator<C> iterator() {
         return new ListIterator();
@@ -153,4 +154,14 @@ public class ListaEnlazada<C> implements Serializable {
     }
 
     
+
+    public C removeFirst() {
+        if (head != null) {
+            C data = head.getData();
+            head = head.getNext();
+            size--;
+            return data;
+        }
+        return null;
+    }
 }

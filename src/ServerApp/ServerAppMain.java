@@ -28,6 +28,7 @@ import ClientApp.Cliente;
 
 public class ServerAppMain {
     private static final Queue<Pedido> pedidosQueue = new Queue<>();
+    private static Socket socket;
     
     public static void main(String[] args) throws ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException {
         
@@ -72,7 +73,7 @@ public class ServerAppMain {
                 String data = username + ":" + contrasena;
                 treeClientes.insert(data);
             }
-
+           
             // Crear el socket del servidor en el puerto 8080
             ServerSocket serverSocket = new ServerSocket(8080);
             System.out.println("Servidor iniciado");
@@ -80,7 +81,7 @@ public class ServerAppMain {
             procesarPedidosThread.start();
             while (true) {
                // Esperar por una conexión del cliente
-               Socket socket = serverSocket.accept();
+               socket = serverSocket.accept();
                System.out.println("Cliente conectado");
 
                // Crear el stream de entrada para recibir la información del Administrador
@@ -262,6 +263,9 @@ private static void procesarPedidos() {
                             break;
                         case 4:
                             EncenderLuces100();
+                            pedido.setEstado("Pendiente de entrega");
+                            enviarMensajeListo();
+                            
                             break;
                     }
                 }
@@ -275,6 +279,7 @@ private static void procesarPedidos() {
         }
     }
 }
+
 
 private static void EncenderLuces25() {
     System.out.println("Encendiendo luces al 25%");
@@ -300,4 +305,15 @@ public static void agregarPedido(Pedido pedido) {
     pedidosQueue.enqueue(pedido);
     System.out.println("Pedido encolado: " + pedido);
 }
+private static void enviarMensajeListo() {
+    try {
+        DataOutputStream outMensaje = new DataOutputStream(socket.getOutputStream());
+        outMensaje.writeBoolean(true); // Valor booleano a enviar
+        outMensaje.flush();
+        System.out.println("Se ha enviado un Listo al ClientApp");
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
 }
