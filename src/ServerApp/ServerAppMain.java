@@ -222,59 +222,63 @@ private static void procesarPedidos() {
     while (true) {
         if (!pedidosQueue.isEmpty()) {
             Pedido pedido = pedidosQueue.dequeue();
-            System.out.println("Procesando pedido:");  
+            System.out.println("Procesando pedido:");
             esperar(3000);
-            ArduinoLEDControl.apagarLeds();  
+            ArduinoLEDControl.apagarLeds();
             esperar(3000);
-            int totalPlatillos = pedido.getPlatillos().size();
-            AtomicInteger platillosPreparados = new AtomicInteger(0);
+            AtomicInteger tiempoTranscurrido = new AtomicInteger(0);
             AtomicInteger rangoProgresoAnterior = new AtomicInteger(0);
+
+            AtomicInteger tiempoTotalPreparacion = new AtomicInteger(0);
+            pedido.getPlatillos().forEach(platillo -> tiempoTotalPreparacion.addAndGet(platillo.getTiempoPreparacion()));
 
             pedido.getPlatillos().forEach(platillo -> {
                 System.out.println("Preparando: " + platillo.getNombre());
-                try {
-                    Thread.sleep(platillo.getTiempoPreparacion() * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                platillosPreparados.incrementAndGet();
-                int progreso = (platillosPreparados.get() * 100) / totalPlatillos;
-                pedido.setProgreso(progreso);
-                System.out.println("Progreso del pedido: " + progreso + "%");
+                int tiempoPreparacion = platillo.getTiempoPreparacion();
+                for (int i = 0; i < tiempoPreparacion; i++) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    tiempoTranscurrido.incrementAndGet();
+                    int progreso = (tiempoTranscurrido.get() * 100) / tiempoTotalPreparacion.get();
+                    pedido.setProgreso(progreso);
+                    System.out.println("Progreso del pedido: " + progreso + "%");
 
-                int rangoProgresoActual = progreso / 25;
-                if (rangoProgresoActual > rangoProgresoAnterior.get()) {
-                    rangoProgresoAnterior.set(rangoProgresoActual);
-                    switch (rangoProgresoActual) {
-                        case 1:
-                            esperar(2000);
-                            ArduinoLEDControl.encenderLeds25Porciento();
-                            EncenderLuces25();
-                            break;
-                        case 2:
+                    int rangoProgresoActual = progreso / 25;
+                    if (rangoProgresoActual > rangoProgresoAnterior.get()) {
+                        rangoProgresoAnterior.set(rangoProgresoActual);
+                        switch (rangoProgresoActual) {
+                            case 1:
                                 esperar(2000);
-                            ArduinoLEDControl.encenderLeds50Porciento();
-                            EncenderLuces50();
-                            break;
-                        case 3:
-                            esperar(2000);
-                            ArduinoLEDControl.encenderLeds75Porciento();
-                            EncenderLuces75();
-                            break;
-                        case 4:
-                            esperar(2000);
-                            ArduinoLEDControl.encenderLeds100Porciento();
-                            EncenderLuces100();
-                            pedido.setEstado("Pendiente de entrega");
-                            esperar(2000);
-                            ArduinoLEDControl.restarUno();
-                            esperar(2000);
-                            ArduinoLEDControl.tocarBocinaCadaCuartoSeg();
-                            esperar(3000);
-                            enviarMensajeListo();
-                            esperar(3000);
-                            
-                            break;
+                                ArduinoLEDControl.encenderLeds25Porciento();
+                                EncenderLuces25();
+                                break;
+                            case 2:
+                                esperar(2000);
+                                ArduinoLEDControl.encenderLeds50Porciento();
+                                EncenderLuces50();
+                                break;
+                            case 3:
+                                esperar(2000);
+                                ArduinoLEDControl.encenderLeds75Porciento();
+                                EncenderLuces75();
+                                break;
+                            case 4:
+                                esperar(2000);
+                                ArduinoLEDControl.encenderLeds100Porciento();
+                                EncenderLuces100();
+                                pedido.setEstado("Pendiente de entrega");
+                                esperar(2000);
+                                ArduinoLEDControl.restarUno();
+                                esperar(2000);
+                                ArduinoLEDControl.tocarBocinaCadaCuartoSeg();
+                                esperar(3000);
+                                enviarMensajeListo();
+                                esperar(3000);
+                                break;
+                        }
                     }
                 }
             });
@@ -287,6 +291,7 @@ private static void procesarPedidos() {
         }
     }
 }
+
 
 
 private static void EncenderLuces25() {
