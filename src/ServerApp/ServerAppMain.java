@@ -142,7 +142,6 @@ public class ServerAppMain {
                             break; // Salir del ciclo interno
                         }
                         System.out.println("Respuesta enviada al cliente: " + encontradoCliente);
-                          
                     } else if (obj instanceof AgregarAdmins_Alpha registrerInfo) {
                         System.out.println("Se recibió información para agregar un nuevo administrador: " + registrerInfo.getUsername() + ":" + registrerInfo.getContrasena());
 
@@ -170,15 +169,6 @@ public class ServerAppMain {
                         // Enviar la respuesta al cliente
                         out.writeObject(true);
                         out.flush();
-                      
-                    //Información de los arboles Binarios enviado a la Master App    
-                    } else if (obj instanceof String && obj.equals("modificaAdmins")) {
-                        System.out.println("Si se envian los datos");
-                        ListaEnlazada elementos = treeClientes.getElements(treeClientes.getRoot());
-                        out.writeObject(elementos);
-                        out.flush();
-                    
-                        
                     } else if (obj instanceof Platillos nuevoPlatillo) {
                         //recibir la info del nuevo platillo que se creo
                         AvlTree<String> avlTreePlatillo = new AvlTree<>();
@@ -228,10 +218,14 @@ public class ServerAppMain {
     
 
 private static void procesarPedidos() {
+    ArduinoLEDControl.iniciarArduino();
     while (true) {
         if (!pedidosQueue.isEmpty()) {
             Pedido pedido = pedidosQueue.dequeue();
-            System.out.println("Procesando pedido:");
+            System.out.println("Procesando pedido:");  
+            esperar(3000);
+            ArduinoLEDControl.apagarLeds();  
+            esperar(3000);
             int totalPlatillos = pedido.getPlatillos().size();
             AtomicInteger platillosPreparados = new AtomicInteger(0);
             AtomicInteger rangoProgresoAnterior = new AtomicInteger(0);
@@ -253,18 +247,32 @@ private static void procesarPedidos() {
                     rangoProgresoAnterior.set(rangoProgresoActual);
                     switch (rangoProgresoActual) {
                         case 1:
+                            esperar(2000);
+                            ArduinoLEDControl.encenderLeds25Porciento();
                             EncenderLuces25();
                             break;
                         case 2:
+                                esperar(2000);
+                            ArduinoLEDControl.encenderLeds50Porciento();
                             EncenderLuces50();
                             break;
                         case 3:
+                            esperar(2000);
+                            ArduinoLEDControl.encenderLeds75Porciento();
                             EncenderLuces75();
                             break;
                         case 4:
+                            esperar(2000);
+                            ArduinoLEDControl.encenderLeds100Porciento();
                             EncenderLuces100();
                             pedido.setEstado("Pendiente de entrega");
+                            esperar(2000);
+                            ArduinoLEDControl.restarUno();
+                            esperar(2000);
+                            ArduinoLEDControl.tocarBocinaCadaCuartoSeg();
+                            esperar(3000);
                             enviarMensajeListo();
+                            esperar(3000);
                             
                             break;
                     }
@@ -302,8 +310,14 @@ private static void EncenderLuces100() {
 }
 
 public static void agregarPedido(Pedido pedido) {
+    
     pedidosQueue.enqueue(pedido);
+    esperar(2000);
+    ArduinoLEDControl.tocarBocina1Seg();
+    esperar(3000);
+    ArduinoLEDControl.sumarUno();
     System.out.println("Pedido encolado: " + pedido);
+
 }
 private static void enviarMensajeListo() {
     try {
@@ -316,4 +330,12 @@ private static void enviarMensajeListo() {
     }
 }
 
+private static void esperar(int milisegundos) {
+    try {
+        Thread.sleep(milisegundos);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
 }
+}
+
