@@ -141,6 +141,7 @@ public class ServerAppMain {
                             break; // Salir del ciclo interno
                         }
                         System.out.println("Respuesta enviada al cliente: " + encontradoCliente);
+                          
                     } else if (obj instanceof AgregarAdmins_Alpha registrerInfo) {
                         System.out.println("Se recibió información para agregar un nuevo administrador: " + registrerInfo.getUsername() + ":" + registrerInfo.getContrasena());
 
@@ -168,6 +169,15 @@ public class ServerAppMain {
                         // Enviar la respuesta al cliente
                         out.writeObject(true);
                         out.flush();
+                      
+                    //Información de los arboles Binarios enviado a la Master App    
+                    } else if (obj instanceof String && obj.equals("modificaAdmins")) {
+                        System.out.println("Si se envian los datos");
+                        ListaEnlazada elementos = treeClientes.getElements(treeClientes.getRoot());
+                        out.writeObject(elementos);
+                        out.flush();
+                    
+                        
                     } else if (obj instanceof Platillos nuevoPlatillo) {
                         //recibir la info del nuevo platillo que se creo
                         AvlTree<String> avlTreePlatillo = new AvlTree<>();

@@ -1,11 +1,11 @@
 
 package ServerApp;
 
+import java.io.Serializable;
 import org.w3c.dom.Element;
 
 
-public class Node <T extends Comparable<? super T>>{
-    //HOLA
+public class Node <T extends Comparable<? super T>> implements Serializable{
      T element;
      Node <T> left;
      Node <T> right;

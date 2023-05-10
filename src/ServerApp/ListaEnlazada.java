@@ -2,6 +2,8 @@ package ServerApp;
 
 import java.util.function.Consumer;
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 
 
@@ -126,4 +128,29 @@ public class ListaEnlazada<C> implements Serializable {
             action.accept(current.getData());
         }
     }
+    
+    public Iterator<C> iterator() {
+        return new ListIterator();
+    }
+
+    private class ListIterator implements Iterator<C> {
+        private NodeLista<C> current = head;
+
+        @Override
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public C next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            C data = current.getData();
+            current = current.getNext();
+            return data;
+        }
+    }
+
+    
 }
