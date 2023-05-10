@@ -123,4 +123,13 @@ public class ListaEnlazada<C> implements Serializable {
             action.accept(current.getData());
         }
     }
+    public C removeFirst() {
+        if (head != null) {
+            C data = head.getData();
+            head = head.getNext();
+            size--;
+            return data;
+        }
+        return null;
+    }
 }
