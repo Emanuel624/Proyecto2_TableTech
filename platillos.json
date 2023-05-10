@@ -3,11 +3,11 @@
     "nombre": "Gallo pinto",
     "cantidadCalorias": 150,
     "precio": 200,
-<<<<<<< HEAD
+
     "tiempoPreparacion": 6
-=======
+
     "tiempoPreparacion": 8
->>>>>>> dd7ebc736ed783834c5958dfb4b587686e696e91
+
   },
   {
     "nombre": "Tacos al pastor",
@@ -19,22 +19,22 @@
     "nombre": "Pizza Margherita",
     "cantidadCalorias": 300,
     "precio": 350,
-<<<<<<< HEAD
+
     "tiempoPreparacion": 10
-=======
+
     "tiempoPreparacion": 15
->>>>>>> dd7ebc736ed783834c5958dfb4b587686e696e91
+
   },
   {
     "nombre": "Pad Thai",
     "cantidadCalorias": 400,
     "precio": 300,
-<<<<<<< HEAD
+
     "tiempoPreparacion": 8
   }
 ]
-=======
+
     "tiempoPreparacion": 10
   }
 ]
->>>>>>> dd7ebc736ed783834c5958dfb4b587686e696e91
+
