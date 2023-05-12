@@ -1,4 +1,3 @@
-
 package ServerApp;
 
 import com.fazecast.jSerialComm.*;
@@ -6,10 +5,11 @@ import com.fazecast.jSerialComm.*;
 public class ArduinoLEDControl {
     private static SerialPort arduinoPort;
 
-    public static void main(String[] args) {
+public static void iniciarArduino() {
         arduinoPort = SerialPort.getCommPort("COM3");
         arduinoPort.openPort();
         arduinoPort.setComPortParameters(9600, 8, 1, 0);
+        System.out.println("Arduino Conectado");
 
         // Espera a que Arduino esté listo para recibir datos
         try {
@@ -17,29 +17,6 @@ public class ArduinoLEDControl {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        // Llama a los métodos para encender los LEDs según el porcentaje deseado
-        encenderLeds25Porciento();
-        sleep(2000);
-        encenderLeds50Porciento();
-        sleep(2000);
-        encenderLeds75Porciento();
-        sleep(2000);
-        encenderLeds100Porciento();
-        sleep(2000);
-        apagarLeds(); // Agrega esta línea para apagar todos los LEDs
-        sleep(2000);
-        tocarBocina1Seg();
-        sleep(2000);
-        tocarBocinaCadaCuartoSeg();
-        sleep(2000);
-        sumarUno();
-        sleep(2000);
-        
-
-        
-
-        arduinoPort.closePort();
     }
 
     public static void encenderLeds25Porciento() {
@@ -94,5 +71,7 @@ public class ArduinoLEDControl {
         }
     }
 }
+
+
 
 

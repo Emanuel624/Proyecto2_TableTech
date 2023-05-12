@@ -191,6 +191,7 @@ public class ServerAppMain {
                         // Enviar la respuesta al cliente
                         out.writeObject(true);
                         out.flush();
+
                         
                     //Enviar datos del arbol con información de los admins    
                     // En el lado del servidor
@@ -238,6 +239,7 @@ public class ServerAppMain {
                         out.writeBoolean(false); // enviar valor booleano
                         out.flush();
                                                      
+
                     } else if (obj instanceof Platillos nuevoPlatillo) {
                         //recibir la info del nuevo platillo que se creo
 
@@ -287,45 +289,67 @@ public class ServerAppMain {
     
 
 private static void procesarPedidos() {
+    ArduinoLEDControl.iniciarArduino();
     while (true) {
         if (!pedidosQueue.isEmpty()) {
             Pedido pedido = pedidosQueue.dequeue();
             System.out.println("Procesando pedido:");
-            int totalPlatillos = pedido.getPlatillos().size();
-            AtomicInteger platillosPreparados = new AtomicInteger(0);
+            esperar(3000);
+            ArduinoLEDControl.apagarLeds();
+            esperar(3000);
+            AtomicInteger tiempoTranscurrido = new AtomicInteger(0);
             AtomicInteger rangoProgresoAnterior = new AtomicInteger(0);
+
+            AtomicInteger tiempoTotalPreparacion = new AtomicInteger(0);
+            pedido.getPlatillos().forEach(platillo -> tiempoTotalPreparacion.addAndGet(platillo.getTiempoPreparacion()));
 
             pedido.getPlatillos().forEach(platillo -> {
                 System.out.println("Preparando: " + platillo.getNombre());
-                try {
-                    Thread.sleep(platillo.getTiempoPreparacion() * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                platillosPreparados.incrementAndGet();
-                int progreso = (platillosPreparados.get() * 100) / totalPlatillos;
-                pedido.setProgreso(progreso);
-                System.out.println("Progreso del pedido: " + progreso + "%");
+                int tiempoPreparacion = platillo.getTiempoPreparacion();
+                for (int i = 0; i < tiempoPreparacion; i++) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    tiempoTranscurrido.incrementAndGet();
+                    int progreso = (tiempoTranscurrido.get() * 100) / tiempoTotalPreparacion.get();
+                    pedido.setProgreso(progreso);
+                    System.out.println("Progreso del pedido: " + progreso + "%");
 
-                int rangoProgresoActual = progreso / 25;
-                if (rangoProgresoActual > rangoProgresoAnterior.get()) {
-                    rangoProgresoAnterior.set(rangoProgresoActual);
-                    switch (rangoProgresoActual) {
-                        case 1:
-                            EncenderLuces25();
-                            break;
-                        case 2:
-                            EncenderLuces50();
-                            break;
-                        case 3:
-                            EncenderLuces75();
-                            break;
-                        case 4:
-                            EncenderLuces100();
-                            pedido.setEstado("Pendiente de entrega");
-                            enviarMensajeListo();
-                            
-                            break;
+                    int rangoProgresoActual = progreso / 25;
+                    if (rangoProgresoActual > rangoProgresoAnterior.get()) {
+                        rangoProgresoAnterior.set(rangoProgresoActual);
+                        switch (rangoProgresoActual) {
+                            case 1:
+                                esperar(2000);
+                                ArduinoLEDControl.encenderLeds25Porciento();
+                                EncenderLuces25();
+                                break;
+                            case 2:
+                                esperar(2000);
+                                ArduinoLEDControl.encenderLeds50Porciento();
+                                EncenderLuces50();
+                                break;
+                            case 3:
+                                esperar(2000);
+                                ArduinoLEDControl.encenderLeds75Porciento();
+                                EncenderLuces75();
+                                break;
+                            case 4:
+                                esperar(2000);
+                                ArduinoLEDControl.encenderLeds100Porciento();
+                                EncenderLuces100();
+                                pedido.setEstado("Pendiente de entrega");
+                                esperar(2000);
+                                ArduinoLEDControl.restarUno();
+                                esperar(2000);
+                                ArduinoLEDControl.tocarBocinaCadaCuartoSeg();
+                                esperar(3000);
+                                enviarMensajeListo();
+                                esperar(3000);
+                                break;
+                        }
                     }
                 }
             });
@@ -338,6 +362,7 @@ private static void procesarPedidos() {
         }
     }
 }
+
 
 
 private static void EncenderLuces25() {
@@ -361,9 +386,15 @@ private static void EncenderLuces100() {
 }
 
 public static void agregarPedido(Pedido pedido) {
+    
     pedidosQueue.enqueue(pedido);
+    esperar(2000);
+    ArduinoLEDControl.tocarBocina1Seg();
+    esperar(3000);
+    ArduinoLEDControl.sumarUno();
     System.out.println("Pedido encolado: " + pedido);
 }
+//
 private static void enviarMensajeListo() {
     try {
         DataOutputStream outMensaje = new DataOutputStream(socket.getOutputStream());
@@ -375,4 +406,12 @@ private static void enviarMensajeListo() {
     }
 }
 
+private static void esperar(int milisegundos) {
+    try {
+        Thread.sleep(milisegundos);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
 }
+}
+
