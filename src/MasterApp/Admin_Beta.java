@@ -1,27 +1,18 @@
 package MasterApp;
 
-import ClientApp.Cliente;
 import ServerApp.Administrador;
 import ServerApp.AgregarAdmins_Alpha;
-import ServerApp.BinaryTree;
-import ServerApp.ListaEnlazada;
 import ServerApp.ListaEnlazadaView;
-import com.google.gson.Gson;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Iterator;
-import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -29,24 +20,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox; 
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+
 
 
 public class Admin_Beta extends Application {
@@ -192,6 +175,51 @@ public class Admin_Beta extends Application {
                             });
                         }
                     }
+                    
+                    if (obj instanceof LinkedList) {
+                        LinkedList<String> adminList = (LinkedList<String>) obj;
+                        System.out.println("Platillos asdasd: " + adminList);
+
+                        // Recibir el valor booleano
+                        boolean value = in.readBoolean();
+                        System.out.println("Valor booleano recibido: " + value);
+
+                        // Llamar al método ModificarAdmins si el valor booleano es verdadero
+                        if (value) {
+                            Platform.runLater(() -> {
+                                ModificarAdmins(stage, adminList);
+                            });
+                        } else {
+                            Platform.runLater(() -> {
+                                elminarAdmins(stage, adminList);
+                        });
+                        }    
+                    }
+                    
+                    //Recibir la información de los platillos 
+                    if (obj instanceof ArrayList) {
+                        ArrayList<String> adminPlatillo = (ArrayList<String>) obj;
+                        System.out.println("Platillos asdasd: " + adminPlatillo);
+
+                        // Recibir el valor booleano
+                        boolean value = in.readBoolean();
+                        System.out.println("Valor booleano recibido: " + value);
+
+                        // Llamar al método ModificarAdmins si el valor booleano es verdadero
+                        if (value) {
+                            Platform.runLater(() -> {
+                                modificarPlatillos(stage, adminPlatillo);
+                            });
+                        } else {
+                            Platform.runLater(() -> {
+                                eliminarPlatillos(stage, adminPlatillo);
+                        });
+                        }    
+                    }
+ 
+
+                    
+                                  
                     // Si el objeto recibido es de otro tipo, hacer algo con él según sea necesario
                 }
 
@@ -263,6 +291,7 @@ public class Admin_Beta extends Application {
                 System.err.println("Error sending login info to server: " + ex.getMessage());
             }
         });
+        agregarButton.setTextFill(Color.GREEN);
         
         Button atrasButton = new Button("Regresar");
         atrasButton.setOnAction(event -> {
@@ -283,7 +312,9 @@ public class Admin_Beta extends Application {
     }
     
     //Método para mostar venta que agrega admins
-    private void ModificarAdmins(Stage primaryStage){
+    private void ModificarAdmins(Stage primaryStage, LinkedList<String> adminList) {
+        System.out.println(adminList);
+
         Label titulo = new Label("Escoge el administrador que quieres modificar");
         titulo.setAlignment(Pos.CENTER);
 
@@ -291,29 +322,31 @@ public class Admin_Beta extends Application {
         TextField nombreTextField = new TextField();
 
         Label contrasenaLabel = new Label("Contraseña:");
-        PasswordField contrasenaPasswordField = new PasswordField();
+        TextField contrasenaPasswordField = new TextField();
 
-        // Crear el dropdown list
-        ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.getItems().addAll();
+        // Crear una ListView
+        ListView<String> listView = new ListView<>();
+        listView.setItems(FXCollections.observableArrayList(adminList));
+        listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         Button modButton = new Button("Modificar");
+        modButton.setTextFill(Color.GREEN);
         modButton.setAlignment(Pos.CENTER);
         modButton.setOnAction(event -> {
-            Thread thread = new Thread(() -> {
-                try {
-                    ListaEnlazada<String> elementos = (ListaEnlazada<String>) in.readObject();
+            String selected = listView.getSelectionModel().getSelectedItem();
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Se modificará el elemento seleccionado: " + selected);
+            alert.showAndWait();
+        });
 
-                    Platform.runLater(() -> {
-                        System.out.println(elementos);
-                    });
-
-
-                } catch (IOException | ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            });
-            thread.start();
+        Button escoger = new Button("Escoger");
+        escoger.setTextFill(Color.BLUE);
+        escoger.setOnAction(event ->{
+            String selected = listView.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                String[] datosAdmin = selected.split(":");
+                nombreTextField.setText(datosAdmin[0]);
+                contrasenaPasswordField.setText(datosAdmin[1]);
+            }
         });
 
         Button atrasButton = new Button("Regresar");
@@ -322,7 +355,7 @@ public class Admin_Beta extends Application {
             Menu(primaryStage);
         });
 
-        VBox vbox = new VBox(titulo, comboBox, nombreLabel, nombreTextField, contrasenaLabel, contrasenaPasswordField, modButton, atrasButton);
+        VBox vbox = new VBox(titulo, listView, nombreLabel, nombreTextField, contrasenaLabel, contrasenaPasswordField, escoger, modButton, atrasButton);
         vbox.setAlignment(Pos.CENTER);
         vbox.setSpacing(10);
 
@@ -331,35 +364,44 @@ public class Admin_Beta extends Application {
         VBox container = new VBox(root);
         container.setAlignment(Pos.CENTER);
 
-        primaryStage.setScene(new Scene(container, 500, 400));
+        primaryStage.setScene(new Scene(container, 500, 670));
         primaryStage.show();
     }
 
 
-    
+   
     //Metodo de GUI para visualizar eliminar Admins
-    private void elminarAdmins(Stage primaryStage){
+    private void elminarAdmins(Stage primaryStage, LinkedList<String> adminList) {
         Label titulo = new Label("Escoge el administrador que quieres eliminar");
         titulo.setAlignment(Pos.CENTER);
       
-        Button atrasButton = new Button("Regresar");
-        atrasButton.setAlignment(Pos.CENTER);
-        atrasButton.setOnAction(event -> {
-            Menu(primaryStage);     
+        ListView<String> listView = new ListView<>();
+        listView.setItems(FXCollections.observableArrayList(adminList));
+        listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        
+        Button escoger = new Button("Escoge");
+        escoger.setAlignment(Pos.CENTER);
+        escoger.setTextFill(Color.BLUE);
+        escoger.setOnAction(event -> {
+             
         });
         
         
         Button eliminarButton = new Button("Elimina");
         eliminarButton.setAlignment(Pos.CENTER);
+        eliminarButton.setTextFill(Color.RED);
         eliminarButton.setOnAction(event -> {
              
         });
         
-        // Crear el dropdown list
-        ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.getItems().addAll();
+                Button atrasButton = new Button("Regresar");
+        atrasButton.setAlignment(Pos.CENTER);
+        atrasButton.setOnAction(event -> {
+            Menu(primaryStage);     
+        });
 
-        VBox vbox = new VBox(titulo, comboBox, eliminarButton, atrasButton);
+        
+        VBox vbox = new VBox(titulo, listView, escoger,eliminarButton, atrasButton);
         vbox.setAlignment(Pos.CENTER);
         vbox.setSpacing(10);
 
@@ -368,7 +410,7 @@ public class Admin_Beta extends Application {
         VBox container = new VBox(root);
         container.setAlignment(Pos.CENTER);
 
-        primaryStage.setScene(new Scene(container, 500, 400));
+        primaryStage.setScene(new Scene(container, 500, 670));
         primaryStage.show();
     }
     
@@ -421,9 +463,14 @@ public class Admin_Beta extends Application {
     }
     
     //Metodo para modificar platillos
-    private void modificarPlatillos(Stage primaryStage) {
+    private void modificarPlatillos(Stage primaryStage, ArrayList<String> adminPlatillo) {
         
         Label titulo = new Label("Modifica un platillo");
+        
+        // Crear una ListView
+        ListView<String> listView = new ListView<>();
+        listView.setItems(FXCollections.observableArrayList(adminPlatillo));
+        listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         
         Label nombreLabel = new Label("Nombre:");
         
@@ -441,23 +488,34 @@ public class Admin_Beta extends Application {
         
         TextField precioTextField = new TextField();
         
-        
-        // Crear el dropdown list
-        ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.getItems().addAll();
-        
-        
-        Button modificarButton = new Button("Modificar");
-        modificarButton.setOnAction(event -> {
-                 
+        Button escogerButton = new Button("Escoger");
+        escogerButton.setTextFill(Color.BLUE);
+        escogerButton.setOnAction(event -> {
+            String selected = listView.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                String[] datosPlatillo = selected.split(":");
+                nombreTextField.setText(datosPlatillo[0]);
+                caloriasTextField.setText(datosPlatillo[1]);
+                preparacionTextField.setText(datosPlatillo[2]);
+                precioTextField.setText(datosPlatillo[3]);
+            }    
         });
 
+        Button modButton = new Button("Modificar");
+        modButton.setTextFill(Color.GREEN);
+        modButton.setAlignment(Pos.CENTER);
+        modButton.setOnAction(event -> {
+            String selected = listView.getSelectionModel().getSelectedItem();
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Se modificará el elemento seleccionado: " + selected);
+            alert.showAndWait();
+        });
+        
         Button atrasButton = new Button("Regresar");
         atrasButton.setOnAction(event -> {
             Menu(primaryStage);     
         });
             
-        VBox vbox = new VBox(titulo,comboBox, nombreLabel, nombreTextField, calorias,caloriasTextField,preparacion,preparacionTextField,precio,precioTextField,modificarButton, atrasButton);
+        VBox vbox = new VBox(titulo,listView, nombreLabel, nombreTextField, calorias,caloriasTextField,preparacion,preparacionTextField,precio,precioTextField,escogerButton,modButton, atrasButton);
         vbox.setAlignment(Pos.CENTER);
         vbox.setSpacing(10);
 
@@ -466,21 +524,29 @@ public class Admin_Beta extends Application {
         VBox container = new VBox(root);
         container.setAlignment(Pos.CENTER);
 
-        primaryStage.setScene(new Scene(container, 500, 400));
+        primaryStage.setScene(new Scene(container, 500, 800));
         primaryStage.show();
     }
     
     //Metodo de GUI para mostrar como eliminar un platillo
-    private void eliminarPlatillos(Stage primaryStage) {
+    private void eliminarPlatillos(Stage primaryStage, ArrayList<String> adminPlatillo) {
         
         Label titulo = new Label("Elimina un platillo");
      
-        // Crear el dropdown list
-        ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.getItems().addAll();
+        // Crear una ListView
+        ListView<String> listView = new ListView<>();
+        listView.setItems(FXCollections.observableArrayList(adminPlatillo));
+        listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         
+        Button escogerButton = new Button("Escoger");
+        escogerButton.setTextFill(Color.BLUE);
+        escogerButton.setOnAction(event -> {
+
+
+        });
         
         Button eliminarButton = new Button("Eliminar");
+        eliminarButton.setTextFill(Color.RED);
         eliminarButton.setOnAction(event -> {
                  
         });
@@ -490,7 +556,7 @@ public class Admin_Beta extends Application {
             Menu(primaryStage);     
         });
             
-        VBox vbox = new VBox(titulo,comboBox,  eliminarButton, atrasButton);
+        VBox vbox = new VBox(titulo,listView,  escogerButton,eliminarButton, atrasButton);
         vbox.setAlignment(Pos.CENTER);
         vbox.setSpacing(10);
 
@@ -499,13 +565,12 @@ public class Admin_Beta extends Application {
         VBox container = new VBox(root);
         container.setAlignment(Pos.CENTER);
 
-        primaryStage.setScene(new Scene(container, 500, 400));
+        primaryStage.setScene(new Scene(container, 500, 700));
         primaryStage.show();
     }
     
     
-    
-     
+        
     //Metodo para el menú principal de eleccción
     private void Menu(Stage primaryStage) {
         btnAgregarAdmin = new Button("Agregar");
@@ -521,30 +586,57 @@ public class Admin_Beta extends Application {
             AgregarAdmins(primaryStage);
         });
         btnModificarAdmin.setOnAction(event -> {
+            // Enviar el mensaje al servidor
             try {
+                // enviar solicitud al servidor
                 out.writeObject("modificaAdmins");
-                out.flush(); 
+                out.flush();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
             
-            ModificarAdmins(primaryStage);
-            
         });
 
         btnEliminarAdmin.setOnAction(event ->{
-            elminarAdmins(primaryStage);
+            // Enviar el mensaje al servidor
+            try {
+                // enviar solicitud al servidor
+                out.writeObject("eliminaAdmins");
+                out.flush();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
         
         
         btnAgregarPlatillo.setOnAction(event -> {
             AgregarPlatillos(primaryStage);
         });
+        
         btnModificarPlatillo.setOnAction(event -> {
-            modificarPlatillos(primaryStage);
+             // Enviar el mensaje al servidor
+            try {
+                // enviar solicitud al servidor
+                out.writeObject("modificarPlatillos");
+                out.flush();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
+        
         btnEliminarPlatillo.setOnAction(event ->{
-            eliminarPlatillos(primaryStage);
+            // Enviar el mensaje al servidor
+            try {
+                // enviar solicitud al servidor
+                out.writeObject("eliminarPlatillos");
+                out.flush();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
 
         Label Titulo = new Label("¿Qué deseas hacer administrador?");

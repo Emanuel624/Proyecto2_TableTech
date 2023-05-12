@@ -25,6 +25,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import MasterApp.Pedido;
 import ClientApp.Cliente;
+import java.util.Arrays;
+import java.util.LinkedList;
+
 
 public class ServerAppMain {
     private static final Queue<Pedido> pedidosQueue = new Queue<>();
@@ -73,6 +76,25 @@ public class ServerAppMain {
                 String data = username + ":" + contrasena;
                 treeClientes.insert(data);
             }
+            
+            
+            AvlTree<String> avlTreePlatillo = new AvlTree<>();
+
+            try (FileReader reader = new FileReader("platillos.json")) {
+                Type platilloListType = new TypeToken<ArrayList<Platillos>>(){}.getType();
+                Gson gson = new Gson();
+                ArrayList<Platillos> listaPlatillos = gson.fromJson(reader, platilloListType);
+                reader.close();
+
+                //recorrer la lista de platillos del json y guardar la info en un avl
+                for (Platillos p : listaPlatillos) {
+                    String dataPlatillo = p.getNombre() + ":" + p.getCantidadCalorias() + ":" + p.getTiempoPreparacion() + ":" + p.getPrecio();
+                    avlTreePlatillo.insertElement(dataPlatillo);
+                    System.out.println(dataPlatillo);
+                }
+            }    
+
+            
            
             // Crear el socket del servidor en el puerto 8080
             ServerSocket serverSocket = new ServerSocket(8080);
@@ -142,7 +164,6 @@ public class ServerAppMain {
                             break; // Salir del ciclo interno
                         }
                         System.out.println("Respuesta enviada al cliente: " + encontradoCliente);
-                          
                     } else if (obj instanceof AgregarAdmins_Alpha registrerInfo) {
                         System.out.println("Se recibió información para agregar un nuevo administrador: " + registrerInfo.getUsername() + ":" + registrerInfo.getContrasena());
 
@@ -170,18 +191,56 @@ public class ServerAppMain {
                         // Enviar la respuesta al cliente
                         out.writeObject(true);
                         out.flush();
-                      
-                    //Información de los arboles Binarios enviado a la Master App    
+                        
+                    //Enviar datos del arbol con información de los admins    
+                    // En el lado del servidor
                     } else if (obj instanceof String && obj.equals("modificaAdmins")) {
-                        System.out.println("Si se envian los datos");
-                        ListaEnlazada elementos = treeClientes.getElements(treeClientes.getRoot());
-                        out.writeObject(elementos);
+                        LinkedList<String> adminList = tree.inOrderTraversal();
+                        System.out.println("Enviando lista de administradores: " + adminList);
+                        out.writeObject(adminList); // enviar lista de cadenas de texto
+                        out.flush();
+                        out.writeBoolean(true); // enviar valor booleano
+                        out.flush();
+                        
+                        
+                    } else if (obj instanceof String && obj.equals("eliminaAdmins")) {
+                        LinkedList<String> adminList = tree.inOrderTraversal();
+                        System.out.println("Enviando lista de administradores: " + adminList);
+                        out.writeObject(adminList); // enviar lista de cadenas de texto
+                        out.flush();
+                        out.writeBoolean(false); // enviar valor booleano
+                        out.flush();
+                        
+                        
+                    } else if (obj instanceof String && obj.equals("modificaAdmins")) {
+                        LinkedList<String> adminList = tree.inOrderTraversal();
+                        System.out.println("Enviando lista de administradores: " + adminList);
+                        out.writeObject(adminList); // enviar lista de cadenas de texto
+                        out.flush();
+                        out.writeBoolean(true); // enviar valor booleano
+                        out.flush();
+                        
+                    //Desplegar información de platillos    
+                    } else if (obj instanceof String && obj.equals("modificarPlatillos")) {
+                        ArrayList<String> adminPlatillo = avlTreePlatillo.inOrderTraversal();
+                        System.out.println("Enviando lista de platillos: " + adminPlatillo);
+                        out.writeObject(adminPlatillo); // enviar lista de cadenas de texto
+                        out.flush();
+                        out.writeBoolean(true); // enviar valor booleano
                         out.flush();
                     
                         
+                    } else if (obj instanceof String && obj.equals("eliminarPlatillos")) {
+                        ArrayList<String> adminPlatillo = avlTreePlatillo.inOrderTraversal();
+                        System.out.println("Enviando lista de platillos: " + adminPlatillo);
+                        out.writeObject(adminPlatillo); // enviar lista de cadenas de texto
+                        out.flush();
+                        out.writeBoolean(false); // enviar valor booleano
+                        out.flush();
+                                                     
                     } else if (obj instanceof Platillos nuevoPlatillo) {
                         //recibir la info del nuevo platillo que se creo
-                        AvlTree<String> avlTreePlatillo = new AvlTree<>();
+
 
                         //guardar el platillo a un archivo json
                         try(FileReader reader = new FileReader("platillos.json")){

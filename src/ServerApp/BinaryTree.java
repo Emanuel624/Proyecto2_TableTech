@@ -1,11 +1,12 @@
-
+ 
 package ServerApp;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 //Esta clase es un arbol binario de busqueda utilizado para generar validaciones de datos
-public class BinaryTree <T extends Comparable<? super T>> implements Serializable {
-    Node<T> root;
+public class BinaryTree <T extends Comparable<? super T>> implements Serializable{
+    private Node<T> root;
     
     public BinaryTree(){
         this.root = null;
@@ -14,7 +15,7 @@ public class BinaryTree <T extends Comparable<? super T>> implements Serializabl
     public boolean isEmpty(){
         return this.root == null;
     }
-    
+     
     public boolean contains(T element){
         return this.contains(element, this.root);
     }
@@ -34,23 +35,20 @@ public class BinaryTree <T extends Comparable<? super T>> implements Serializabl
         }
     }
     
-    public ListaEnlazada<T> getElements(Node<T> node) {
-        ListaEnlazada<T> list = new ListaEnlazada<>();
-        getElements(node, list);
+    public LinkedList<T> inOrderTraversal() {
+        LinkedList<T> list = new LinkedList<>();
+        inOrderTraversal(this.root, list);
         return list;
     }
 
-    private void getElements(Node<T> node, ListaEnlazada<T> list) {
+    private void inOrderTraversal(Node<T> node, LinkedList<T> list) {
         if (node != null) {
-            getElements(node.left, list);
+            inOrderTraversal(node.left, list);
             list.add(node.element);
-            getElements(node.right, list);
+            inOrderTraversal(node.right, list);
         }
     }
 
-    public Node<T> getRoot() {
-        return this.root;
-    }
 
 
     public Node<T> findMin(){
@@ -85,7 +83,7 @@ public class BinaryTree <T extends Comparable<? super T>> implements Serializabl
             }
         return node;
     }
-     
+    
     public void insert(T element){
         this.root = this.insert(element, this.root);
     }
@@ -126,6 +124,7 @@ private Node<T> find(T element, Node<T> node) {
         }
     }
 }
+
 
     public Node<T> remove(T element, Node<T> node){
         if (node == null)

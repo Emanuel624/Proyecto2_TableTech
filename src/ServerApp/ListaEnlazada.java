@@ -46,7 +46,7 @@ public class ListaEnlazada<C> implements Serializable {
      */
     public void add(C data) {
         NodeLista<C> newNode = new NodeLista<C>(data);
-        newNode.setNext(this.head);;
+        newNode.setNext(this.head);
         this.head = newNode;
         this.size++;
     }

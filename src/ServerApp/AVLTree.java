@@ -1,6 +1,9 @@
 package ServerApp;
 
-public class AvlTree<T extends Comparable<? super T>> {
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class AvlTree<T extends Comparable<? super T>> implements Serializable{
     private AvlNode<T> rootNode;
 
     //Constructor to set null value to the rootNode
@@ -36,12 +39,27 @@ public class AvlTree<T extends Comparable<? super T>> {
     {
         return leftNodeHeight > rightNodeHeight ? leftNodeHeight : rightNodeHeight;
     }
+    
+    //Metodos creados para desplegar la información en la GUI correspondiente
+    public ArrayList<T> inOrderTraversal() {
+        ArrayList<T> list = new ArrayList<>();
+        inOrderTraversal(this.rootNode, list);
+        return list;
+    }
 
+    private void inOrderTraversal(AvlNode<T> node, ArrayList<T> list) {
+        if (node != null) {
+            inOrderTraversal(node.leftChild, list);
+            list.add(node.element);
+            inOrderTraversal(node.rightChild, list);
+        }
+    }
 
+    
     //create insertElement() method to insert data in the AVL Tree recursively
     private AvlNode<T> insertElement(T element, AvlNode<T> current) {
         if (current == null) {
-            current = new AvlNode<>(element);
+            current = new AvlNode<T>(element);
         } else if (element.compareTo(current.element) < 0) {
             current.leftChild = insertElement(element, current.leftChild);
             if (getHeight(current.leftChild) - getHeight(current.rightChild) == 2) {
