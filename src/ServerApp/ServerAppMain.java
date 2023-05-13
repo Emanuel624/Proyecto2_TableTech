@@ -25,9 +25,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import MasterApp.Pedido;
 import ClientApp.Cliente;
-import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
+import org.w3c.dom.Node;
 
 public class ServerAppMain {
     private static final Queue<Pedido> pedidosQueue = new Queue<>();
@@ -90,7 +91,6 @@ public class ServerAppMain {
                 for (Platillos p : listaPlatillos) {
                     String dataPlatillo = p.getNombre() + ":" + p.getCantidadCalorias() + ":" + p.getTiempoPreparacion() + ":" + p.getPrecio();
                     avlTreePlatillo.insertElement(dataPlatillo);
-                    System.out.println(dataPlatillo);
                 }
             }    
 
@@ -164,8 +164,166 @@ public class ServerAppMain {
                             break; // Salir del ciclo interno
                         }
                         System.out.println("Respuesta enviada al cliente: " + encontradoCliente);
+                        
+                        
+                    //Lógica para eliminar Administradores del arbol binario y del XML    
+                    } else if (obj instanceof EliminarAdmin eliminadoInfo) {
+                        System.out.println("Administrador por eliminar: " + eliminadoInfo.getUsername() + ":" + eliminadoInfo.getContrasena());
+                        String data = eliminadoInfo.getUsername() + ":" + eliminadoInfo.getContrasena();
+                        ServerApp.Node<String> current = tree.getRoot();
+                        if (tree.contains(data)) {
+                            current = tree.remove(data, current);
+
+                            // Eliminar el administrador del archivo XML
+                            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                            doc.getDocumentElement().normalize();
+
+                            List<Node> nodesToRemove = new ArrayList<>();
+                            for (int i = 0; i < nodeList.getLength(); i++) {
+                                Node node = (Node) nodeList.item(i);
+                                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                                    Element element = (Element) node;
+                                    String username = element.getElementsByTagName("username").item(0).getTextContent();
+                                    String password = element.getElementsByTagName("contrasena").item(0).getTextContent();
+                                    if (username.equals(eliminadoInfo.getUsername()) && password.equals(eliminadoInfo.getContrasena())) {
+                                        nodesToRemove.add(node);
+                                    }
+                                }
+                            }
+
+                            for (Node nodeToRemove : nodesToRemove) {
+                                nodeToRemove.getParentNode().removeChild(nodeToRemove);
+                            }
+
+                            // Guardar los cambios en el archivo XML
+                            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                            Transformer transformer = transformerFactory.newTransformer();
+                            DOMSource source = new DOMSource(doc);
+                            StreamResult result = new StreamResult(new FileOutputStream(xmlFile));
+                            transformer.transform(source, result);
+                        }
+
+                        
+                    //Lógica para recibir el socket de ModficiarAdmins y hacer los cambios en XML y arbol binario   
+                    } else if (obj instanceof ModificarAdminInfo modAdminInfo) {
+                        System.out.println("Administrador por modificar: " + modAdminInfo.getUsernameMod()+ ":" + modAdminInfo.getContrasenaMod() + ":" + modAdminInfo.getUsername() + ":" + modAdminInfo.getContrasena());
+                        
+                        String adminParaMod = modAdminInfo.getUsernameMod()+ ":" + modAdminInfo.getContrasenaMod();
+                        String adminSinMod = modAdminInfo.getUsername() + ":" + modAdminInfo.getContrasena();
+                        ServerApp.Node<String> current = tree.getRoot();
+                        if (tree.contains(adminSinMod)) {
+                            current = tree.remove(adminSinMod, current);
+                            
+                            // Eliminar el administrador del archivo XML
+                            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                            doc.getDocumentElement().normalize();
+
+                            List<Node> nodesToRemove = new ArrayList<>();
+                            for (int i = 0; i < nodeList.getLength(); i++) {
+                                Node node = (Node) nodeList.item(i);
+                                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                                    Element element = (Element) node;
+                                    String username = element.getElementsByTagName("username").item(0).getTextContent();
+                                    String password = element.getElementsByTagName("contrasena").item(0).getTextContent();
+                                    if (username.equals(modAdminInfo.getUsername()) && password.equals(modAdminInfo.getContrasena())) {
+                                        nodesToRemove.add(node);
+                                    }
+                                }
+                            }
+
+                            for (Node nodeToRemove : nodesToRemove) {
+                                nodeToRemove.getParentNode().removeChild(nodeToRemove);
+                            }
+
+                            // Guardar los cambios en el archivo XML
+                            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                            Transformer transformer = transformerFactory.newTransformer();
+                            DOMSource source = new DOMSource(doc);
+                            StreamResult result = new StreamResult(new FileOutputStream(xmlFile));
+                            transformer.transform(source, result);
+                        }
+                        
+                        tree.insert(adminParaMod);
+                        // Agregar el nuevo administrador al documento XML
+                        Element newAdmin = doc.createElement("administrador");
+                        Element newUsername = doc.createElement("username");
+                        Element newContrasena = doc.createElement("contrasena");
+                        newUsername.appendChild(doc.createTextNode(modAdminInfo.getUsernameMod()));
+                        newContrasena.appendChild(doc.createTextNode(modAdminInfo.getContrasenaMod()));
+                        newAdmin.appendChild(newUsername);
+                        newAdmin.appendChild(newContrasena);
+                        doc.getDocumentElement().appendChild(newAdmin);
+
+                        // Guardar los cambios en el archivo XML
+                        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                        Transformer transformer = transformerFactory.newTransformer();
+                        DOMSource source = new DOMSource(doc);
+                        StreamResult result = new StreamResult(new FileOutputStream(xmlFile));
+                        transformer.transform(source, result);
+
+                        // Enviar la respuesta al cliente
+                        out.writeObject(true);
+                        out.flush();
+                    
+
+                    //Lógica que recibe los datos modificados de los platillos    
+                    } else if (obj instanceof ModificarPlatillosInfo modPlatillosInfo) {
+                        System.out.println("Platillos por modificar: " + modPlatillosInfo.getNombre()+ ":" + modPlatillosInfo.getCalorias() + ":" + modPlatillosInfo.getTiempoMod() + ":" + modPlatillosInfo.getPrecio() + ":" + modPlatillosInfo.getNombreMod()+ ":" + modPlatillosInfo.getCaloriasMod() + ":" + modPlatillosInfo.getTiempoMod() + ":" + modPlatillosInfo.getPrecioMod());                        
+                        String dataSinMod = modPlatillosInfo.getNombre()+ ":" + modPlatillosInfo.getCalorias() + ":" + modPlatillosInfo.getTiempo() + ":" + modPlatillosInfo.getPrecio();
+                        String DataMod = modPlatillosInfo.getNombreMod()+ ":" + modPlatillosInfo.getCaloriasMod() + ":" + modPlatillosInfo.getTiempoMod() + ":" + modPlatillosInfo.getPrecioMod();
+
+                        if (avlTreePlatillo.contains(dataSinMod)){
+                            avlTreePlatillo.removeElement(dataSinMod);
+                        }
+                        // eliminar el platillo del archivo JSON
+                        try (FileReader reader = new FileReader("platillos.json")) {
+                            Type platilloListType1 = new TypeToken<ArrayList<Platillos>>(){}.getType();
+                            Gson gson = new Gson();
+                            ArrayList<Platillos> listaPlatillos1 = gson.fromJson(reader, platilloListType1);
+                            reader.close();
+
+                            // buscar y eliminar el objeto correspondiente
+                            for (int i = 0; i < listaPlatillos1.size(); i++) {
+                                Platillos platillo1 = listaPlatillos1.get(i);
+                                if (platillo1.getNombre().equals(modPlatillosInfo.getNombre())
+                                    && platillo1.getCantidadCalorias() == modPlatillosInfo.getCalorias()
+                                    && platillo1.getTiempoPreparacion() == modPlatillosInfo.getTiempo()
+                                    && platillo1.getPrecio() == modPlatillosInfo.getPrecio()) {
+                                    listaPlatillos1.remove(i);
+                                }
+                            }
+
+                            // escribir la lista actualizada en el archivo
+                            FileWriter writer = new FileWriter("platillos.json");
+                            gson.toJson(listaPlatillos1, writer);
+                            writer.close();
+                        }catch (IOException e){
+                            e.printStackTrace();
+                        }
+                        
+                        
+                        avlTreePlatillo.insertElement(DataMod);
+                        //guardar el platillo a un archivo json
+                        try(FileReader reader = new FileReader("platillos.json")){
+                            Type platilloListType = new TypeToken<ArrayList<Platillos>>(){}.getType();
+                            Gson gson = new Gson();
+                            ArrayList<Platillos> listaPlatillos = gson.fromJson(reader, platilloListType);
+                            reader.close();
+                            listaPlatillos.add(new Platillos(modPlatillosInfo.getNombreMod(), modPlatillosInfo.getCaloriasMod(), modPlatillosInfo.getTiempoMod(), modPlatillosInfo.getPrecioMod()));
+                            FileWriter writer = new FileWriter("platillos.json");
+                            gson.toJson(listaPlatillos, writer);
+                            writer.close();
+                        }catch (IOException e){
+                            e.printStackTrace();
+                        }
+                        
+                        
+                        
+                    //Lógica para agregar adniministradores al arbol y al XML  
                     } else if (obj instanceof AgregarAdmins_Alpha registrerInfo) {
-                        System.out.println("Se recibió información para agregar un nuevo administrador: " + registrerInfo.getUsername() + ":" + registrerInfo.getContrasena());
+                        System.out.println("Administrador por agregar: " + registrerInfo.getUsername() + ":" + registrerInfo.getContrasena());
 
                         // Agregar el nuevo administrador al árbol
                         String data = registrerInfo.getUsername() + ":" + registrerInfo.getContrasena();
@@ -241,8 +399,9 @@ public class ServerAppMain {
                                                      
 
                     } else if (obj instanceof Platillos nuevoPlatillo) {
-                        //recibir la info del nuevo platillo que se creo
-
+                        //recibir la info del nuevo platillo que se creo y agregarla al arbol AVL
+                        String data = nuevoPlatillo.getNombre() + ":" + nuevoPlatillo.getCantidadCalorias() + ":" +nuevoPlatillo.getTiempoPreparacion() + ":" + nuevoPlatillo.getPrecio();
+                        avlTreePlatillo.insertElement(data);
 
                         //guardar el platillo a un archivo json
                         try(FileReader reader = new FileReader("platillos.json")){
@@ -254,20 +413,51 @@ public class ServerAppMain {
                             FileWriter writer = new FileWriter("platillos.json");
                             gson.toJson(listaPlatillos, writer);
                             writer.close();
-                            //recorrer la lista de platillos del json y guardar la info en un avl
-                            for (Platillos p : listaPlatillos) {
-                                String dataPlatillo = p.getNombre() + "" + p.getCantidadCalorias() + "" + p.getTiempoPreparacion()
-                                        + "" + p.getPrecio();
-                                avlTreePlatillo.insertElement(dataPlatillo);
-                                System.out.println(dataPlatillo);
-                            }
 
 
                         }catch (IOException e){
                             e.printStackTrace();
                         }
-                    }
+                        
+                        
+                        //Recibir mensaje para eliminar platillos
+                        } else if (obj instanceof EliminarPlatillo PlatInfoEliminado) {
+                        //recibir la info del nuevo platillo que se creo y agregarla al arbol AVL
+                        String data = PlatInfoEliminado.getNombre() + ":" + PlatInfoEliminado.getCantidadCalorias() + ":" +PlatInfoEliminado.getTiempoPreparacion() + ":" + PlatInfoEliminado.getPrecio();
+                        if (avlTreePlatillo.contains(data)){
+                            avlTreePlatillo.removeElement(data);
+                        }
 
+                        // eliminar el platillo del archivo JSON
+                        try (FileReader reader = new FileReader("platillos.json")) {
+                            Type platilloListType = new TypeToken<ArrayList<Platillos>>(){}.getType();
+                            Gson gson = new Gson();
+                            ArrayList<Platillos> listaPlatillos = gson.fromJson(reader, platilloListType);
+                            reader.close();
+
+                            // buscar y eliminar el objeto correspondiente
+                            for (int i = 0; i < listaPlatillos.size(); i++) {
+                                Platillos platillo = listaPlatillos.get(i);
+                                if (platillo.getNombre().equals(PlatInfoEliminado.getNombre())
+                                    && platillo.getCantidadCalorias() == PlatInfoEliminado.getCantidadCalorias()
+                                    && platillo.getTiempoPreparacion() == PlatInfoEliminado.getTiempoPreparacion()
+                                    && platillo.getPrecio() == PlatInfoEliminado.getPrecio()) {
+                                    listaPlatillos.remove(i);
+                                    break;
+                                }
+                            }
+
+                            // escribir la lista actualizada en el archivo
+                            FileWriter writer = new FileWriter("platillos.json");
+                            gson.toJson(listaPlatillos, writer);
+                            writer.close();
+
+
+                        }catch (IOException e){
+                            e.printStackTrace();
+                        }    
+                               
+                    }
                 }
 
 

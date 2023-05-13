@@ -1,5 +1,1 @@
-
-[{"nombre":"Gallo pinto","cantidadCalorias":150,"tiempoPreparacion":6,"precio":200},{"nombre":"Tacos al pastor","cantidadCalorias":200,"tiempoPreparacion":5,"precio":250},{"nombre":"Pizza Margherita","cantidadCalorias":300,"tiempoPreparacion":10,"precio":350},{"nombre":"Pad Thai","cantidadCalorias":400,"tiempoPreparacion":8,"precio":300},{"nombre":"Huevo","cantidadCalorias":1,"tiempoPreparacion":10,"precio":10}]
-
-
-
+[{"nombre":"Tacos al pastor","cantidadCalorias":200,"tiempoPreparacion":5,"precio":250},{"nombre":"Pizza Margherita","cantidadCalorias":300,"tiempoPreparacion":10,"precio":350},{"nombre":"Pad Thai","cantidadCalorias":400,"tiempoPreparacion":8,"precio":300},{"nombre":"Huevo","cantidadCalorias":1,"tiempoPreparacion":10,"precio":10},{"nombre":"GalloPinto","cantidadCalorias":150,"tiempoPreparacion":1500,"precio":1250}]

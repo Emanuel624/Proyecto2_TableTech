@@ -35,6 +35,11 @@ public class BinaryTree <T extends Comparable<? super T>> implements Serializabl
         }
     }
     
+    public Node<T> getRoot() {
+        return this.root;
+    }
+
+    
     public LinkedList<T> inOrderTraversal() {
         LinkedList<T> list = new LinkedList<>();
         inOrderTraversal(this.root, list);

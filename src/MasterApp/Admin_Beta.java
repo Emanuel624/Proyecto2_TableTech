@@ -2,7 +2,11 @@ package MasterApp;
 
 import ServerApp.Administrador;
 import ServerApp.AgregarAdmins_Alpha;
+import ServerApp.EliminarAdmin;
+import ServerApp.EliminarPlatillo;
 import ServerApp.ListaEnlazadaView;
+import ServerApp.ModificarAdminInfo;
+import ServerApp.ModificarPlatillosInfo;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -45,35 +49,8 @@ public class Admin_Beta extends Application {
         Label lblPass = new Label("Contraseña:");
         TextField txtUser = new TextField();
         PasswordField txtPass = new PasswordField();
-        TextField txtNombre = new TextField();
-        TextField txtCalorias = new TextField();
-        TextField txtPrecio = new TextField();
-        TextField txtTiempo = new TextField();
-        Label lblNombre = new Label("Nombre:");
-        Label lblCalorias = new Label("Calorias:");
-        Label lblTiempo = new Label("Tiempo:");
-        Label lblPrecio = new Label("Precio");
+
         Button btnLogin = new Button("Iniciar Sesión");
-        Button btnRegistrer = new Button("Registrate");
-        Button btnAgregar = new Button("Agregar Platillo");
-
-
-
-        HBox hboxNombre = new HBox(lblNombre, txtNombre);
-        hboxNombre.setSpacing(15);
-        hboxNombre.setAlignment(Pos.TOP_RIGHT);
-
-        HBox hboxCalorias = new HBox(lblCalorias, txtCalorias);
-        hboxCalorias.setSpacing(15);
-        hboxCalorias.setAlignment(Pos.TOP_RIGHT);
-
-        HBox hboxTiempo = new HBox(lblTiempo, txtTiempo);
-        hboxTiempo.setSpacing(15);
-        hboxTiempo.setAlignment(Pos.TOP_RIGHT);
-
-        HBox hboxPrecio = new HBox(lblPrecio, txtPrecio);
-        hboxPrecio.setSpacing(15);
-        hboxPrecio.setAlignment(Pos.TOP_RIGHT);
 
         // Crear un contenedor para los nodos de usuario
         HBox hboxUser = new HBox(lblUser, txtUser);
@@ -86,12 +63,12 @@ public class Admin_Beta extends Application {
         hboxPass.setAlignment(Pos.CENTER);
 
         // Crear un contenedor para los botones
-        HBox hboxButtons = new HBox(btnLogin, btnRegistrer, btnAgregar);
+        HBox hboxButtons = new HBox(btnLogin);
         hboxButtons.setSpacing(10);
         hboxButtons.setAlignment(Pos.CENTER); 
 
         // Crear un contenedor para todos los nodos
-        VBox vbox = new VBox(lblTitle, hboxUser, hboxPass, hboxButtons, hboxNombre, hboxCalorias, hboxTiempo, hboxPrecio);
+        VBox vbox = new VBox(lblTitle, hboxUser, hboxPass, hboxButtons);
         vbox.setSpacing(10);
         vbox.setAlignment(Pos.CENTER);
         vbox.setPadding(new Insets(20));
@@ -128,28 +105,6 @@ public class Admin_Beta extends Application {
             }
         });
        
-        //¿?
-        btnAgregar.setOnAction(event -> {
-            try{
-                String nombre =  txtNombre.getText();
-                int calorias = Integer.parseInt(txtCalorias.getText());
-                int tiempo = Integer.parseInt(txtTiempo.getText());
-                int precio = Integer.parseInt(txtPrecio.getText());
-
-                Platillos nuevoPlatillo =  new Platillos(nombre, calorias, tiempo, precio);
-                out.writeObject(nuevoPlatillo);
-                out.flush();
-
-                txtNombre.clear();
-                txtCalorias.clear();
-                txtTiempo.clear();
-                txtPrecio.clear();
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-
-        });
-
 
         Thread thread = new Thread(() -> {
             try {
@@ -265,7 +220,7 @@ public class Admin_Beta extends Application {
         PasswordField contrasenaPasswordField = new PasswordField();
         
         Button agregarButton = new Button("Agregar");
-
+        agregarButton.setTextFill(Color.GREEN);
         agregarButton.setOnAction(event -> {
             try {
                 String username = nombreTextField.getText();
@@ -275,7 +230,7 @@ public class Admin_Beta extends Application {
                 if (username.isEmpty() || password.isEmpty()) {
                     Alert alert = new Alert(AlertType.WARNING);
                     alert.setHeaderText(null);
-                    alert.setContentText("Los campos no pueden estar vacíos.");
+                    alert.setContentText("Todos los campos deben de estar rellenos.");
                     alert.showAndWait();
                     return;
                 } else {
@@ -328,16 +283,43 @@ public class Admin_Beta extends Application {
         ListView<String> listView = new ListView<>();
         listView.setItems(FXCollections.observableArrayList(adminList));
         listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
+        
         Button modButton = new Button("Modificar");
         modButton.setTextFill(Color.GREEN);
         modButton.setAlignment(Pos.CENTER);
         modButton.setOnAction(event -> {
-            String selected = listView.getSelectionModel().getSelectedItem();
-            Alert alert = new Alert(AlertType.CONFIRMATION, "Se modificará el elemento seleccionado: " + selected);
-            alert.showAndWait();
+            try {
+                String selected = listView.getSelectionModel().getSelectedItem();
+                String username = nombreTextField.getText(); //Datos para validaciones
+                String password = contrasenaPasswordField.getText();
+                if (selected != null) {
+                    if (username.isEmpty() || password.isEmpty()) {
+                        Alert alert = new Alert(AlertType.WARNING);
+                        alert.setHeaderText(null);
+                        alert.setContentText("Todos los campos deben de estar rellenos.");
+                        alert.showAndWait();  
+                    } else {
+                        String[] sinMod = selected.split(":");
+                        String adminNoModNombre = sinMod[0];
+                        String adminNoModContraseña = sinMod[1];
+
+                        ModificarAdminInfo modAdminInfo = new ModificarAdminInfo(adminNoModNombre, adminNoModContraseña, username, password);
+                        out.writeObject(modAdminInfo);
+                        out.flush();       
+                    }
+                } else {
+                    Alert alert = new Alert(AlertType.WARNING);
+                    alert.setHeaderText(null);
+                    alert.setContentText("Para modificar debes escoger un administrador.");
+                    alert.showAndWait();       
+                }
+            } catch (IOException ex) {
+                System.err.println("Error sending login info to server: " + ex.getMessage());    
+            }
+
         });
 
+        
         Button escoger = new Button("Escoger");
         escoger.setTextFill(Color.BLUE);
         escoger.setOnAction(event ->{
@@ -378,30 +360,39 @@ public class Admin_Beta extends Application {
         ListView<String> listView = new ListView<>();
         listView.setItems(FXCollections.observableArrayList(adminList));
         listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        
-        Button escoger = new Button("Escoge");
-        escoger.setAlignment(Pos.CENTER);
-        escoger.setTextFill(Color.BLUE);
-        escoger.setOnAction(event -> {
-             
-        });
-        
-        
+
+                
         Button eliminarButton = new Button("Elimina");
         eliminarButton.setAlignment(Pos.CENTER);
         eliminarButton.setTextFill(Color.RED);
         eliminarButton.setOnAction(event -> {
-             
+            try {
+                // Obtener el elemento seleccionado en la ListView
+                String selectedAdmin = listView.getSelectionModel().getSelectedItem();
+
+                // Separar el usuario y la contraseña en dos variables diferentes
+                String[] adminInfo = selectedAdmin.split(":");
+                String username = adminInfo[0];
+                String password = adminInfo[1];
+
+                // Crear un objeto con la información del elemento seleccionado y enviarlo al servidor
+                EliminarAdmin eliminadoInfo = new EliminarAdmin(username, password);
+                out.writeObject(eliminadoInfo);
+                out.flush();
+
+            } catch (IOException ex) {
+                System.err.println("Error sending admin info to server: " + ex.getMessage());
+            }
         });
         
-                Button atrasButton = new Button("Regresar");
+        Button atrasButton = new Button("Regresar");
         atrasButton.setAlignment(Pos.CENTER);
         atrasButton.setOnAction(event -> {
             Menu(primaryStage);     
         });
 
         
-        VBox vbox = new VBox(titulo, listView, escoger,eliminarButton, atrasButton);
+        VBox vbox = new VBox(titulo, listView, eliminarButton, atrasButton);
         vbox.setAlignment(Pos.CENTER);
         vbox.setSpacing(10);
 
@@ -440,10 +431,42 @@ public class Admin_Beta extends Application {
         
         Button agregarButton = new Button("Agregar");
         agregarButton.setOnAction(event -> {
+            try {
+                String nombre = nombreTextField.getText();
+                String caloriasStr = caloriasTextField.getText();
+                String preparacionStr = preparacionTextField.getText();
+                String precioStr = precioTextField.getText();
+
+                if (nombre.trim().isEmpty() || caloriasStr.trim().isEmpty() || preparacionStr.trim().isEmpty() || precioStr.trim().isEmpty()) {
+                    // Muestra un mensaje de error si alguno de los campos de texto está vacío
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Todos los campos deben de estar rellenos.");
+                    alert.showAndWait();
+                } else {
+                    // Convierte los valores de los campos de texto a los tipos de datos correspondientes
+                    int caloriasInt = Integer.parseInt(caloriasStr);
+                    int tiempoInt = Integer.parseInt(preparacionStr);
+                    int precioInt = Integer.parseInt(precioStr);
+
+                    // Crea un objeto Platillos con los valores de los campos de texto y lo envía al servidor
+                    Platillos nuevoPlatillo = new Platillos(nombre, caloriasInt, tiempoInt, precioInt);
+                    out.writeObject(nuevoPlatillo);
+                    out.flush();
+
+                    // Limpia los campos de texto después de enviar la información al servidor
+                    nombreTextField.clear();
+                    caloriasTextField.clear();
+                    preparacionTextField.clear();
+                    precioTextField.clear();
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
                  
         });
-
-
+        
         Button atrasButton = new Button("Regresar");
         atrasButton.setOnAction(event -> {
             Menu(primaryStage);     
@@ -488,26 +511,74 @@ public class Admin_Beta extends Application {
         
         TextField precioTextField = new TextField();
         
+        
         Button escogerButton = new Button("Escoger");
         escogerButton.setTextFill(Color.BLUE);
         escogerButton.setOnAction(event -> {
             String selected = listView.getSelectionModel().getSelectedItem();
             if (selected != null) {
-                String[] datosPlatillo = selected.split(":");
-                nombreTextField.setText(datosPlatillo[0]);
-                caloriasTextField.setText(datosPlatillo[1]);
-                preparacionTextField.setText(datosPlatillo[2]);
-                precioTextField.setText(datosPlatillo[3]);
-            }    
+                String[] datosPlatillos = selected.split(":");
+                nombreTextField.setText(datosPlatillos[0]);
+                caloriasTextField.setText(datosPlatillos[1]);
+                preparacionTextField.setText(datosPlatillos[2]);
+                precioTextField.setText(datosPlatillos[3]);
+            }
         });
-
+        
+        
         Button modButton = new Button("Modificar");
         modButton.setTextFill(Color.GREEN);
         modButton.setAlignment(Pos.CENTER);
         modButton.setOnAction(event -> {
-            String selected = listView.getSelectionModel().getSelectedItem();
-            Alert alert = new Alert(AlertType.CONFIRMATION, "Se modificará el elemento seleccionado: " + selected);
-            alert.showAndWait();
+            try {
+                String selected = listView.getSelectionModel().getSelectedItem();
+                String nombre = nombreTextField.getText(); //Datos para validaciones
+                String caloriasText = caloriasTextField.getText();
+                String preparacionText = preparacionTextField.getText();
+                String precioText = precioTextField.getText();
+                
+                int caloriasInt = Integer.parseInt(caloriasText);
+                int preparacionInt = Integer.parseInt(preparacionText);
+                int precioInt = Integer.parseInt(precioText);
+                               
+                
+                if (selected != null) {
+                    if (nombre.trim().isEmpty() || caloriasText.trim().isEmpty() || preparacionText.trim().isEmpty() || precioText.trim().isEmpty()) {
+                        Alert alert = new Alert(AlertType.WARNING);
+                        alert.setHeaderText(null);
+                        alert.setContentText("Todos los campos deben de estar rellenos.");
+                        alert.showAndWait();  
+                    } else {
+                        String[] sinMod = selected.split(":");
+                        String PlatilloNoModNombre = sinMod[0];
+                        String PlatilloNoModCalorias = sinMod[1];
+                        String PlatilloNoModTiempo = sinMod[2];
+                        String PlatilloNoModPrecio = sinMod[3];
+                        
+                        
+                        int intPlatilloNoModCalorias = Integer.parseInt(PlatilloNoModCalorias);
+                        int intPlatilloNoModTiempo = Integer.parseInt(PlatilloNoModTiempo);
+                        int intPlatilloNoModPrecio = Integer.parseInt(PlatilloNoModPrecio);
+                                               
+
+                        ModificarPlatillosInfo modPlatillosInfo = new ModificarPlatillosInfo(PlatilloNoModNombre, intPlatilloNoModCalorias, intPlatilloNoModTiempo, intPlatilloNoModPrecio, nombre, caloriasInt, preparacionInt, precioInt);
+                        out.writeObject(modPlatillosInfo);
+                        out.flush();       
+                    }
+                } else {
+                    Alert alert = new Alert(AlertType.WARNING);
+                    alert.setHeaderText(null);
+                    alert.setContentText("Para modificar debes escoger un administrador.");
+                    alert.showAndWait();       
+                }
+            } catch (IOException ex) {
+                System.err.println("Error sending login info to server: " + ex.getMessage());    
+            }
+            
+            nombreTextField.clear();
+            caloriasTextField.clear();
+            preparacionTextField.clear();
+            precioTextField.clear();
         });
         
         Button atrasButton = new Button("Regresar");
@@ -538,25 +609,41 @@ public class Admin_Beta extends Application {
         listView.setItems(FXCollections.observableArrayList(adminPlatillo));
         listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         
-        Button escogerButton = new Button("Escoger");
-        escogerButton.setTextFill(Color.BLUE);
-        escogerButton.setOnAction(event -> {
-
-
-        });
-        
         Button eliminarButton = new Button("Eliminar");
         eliminarButton.setTextFill(Color.RED);
-        eliminarButton.setOnAction(event -> {
-                 
+        eliminarButton.setOnAction(event -> {     
+            try {
+                // Obtener el elemento seleccionado en la ListView
+                String selectedPlatillo = listView.getSelectionModel().getSelectedItem();
+
+                // Separar el usuario y la contraseña en dos variables diferentes
+                String[] platilloInfo = selectedPlatillo.split(":");
+                String nombre = platilloInfo[0];
+                String calorias = platilloInfo[1];
+                String preparacion = platilloInfo[2];
+                String precio = platilloInfo[3];
+                
+                int caloriasInt = Integer.parseInt(calorias);
+                int preparacionInt = Integer.parseInt(preparacion);
+                int precioInt = Integer.parseInt(precio);
+
+                // Crear un objeto con la información del elemento seleccionado y enviarlo al servidor
+                EliminarPlatillo PlatInfoEliminado = new EliminarPlatillo(nombre, caloriasInt, preparacionInt, precioInt);
+                out.writeObject(PlatInfoEliminado);
+                out.flush();
+
+            } catch (IOException ex) {
+                System.err.println("Error sending admin info to server: " + ex.getMessage());
+            }
         });
+        
 
         Button atrasButton = new Button("Regresar");
         atrasButton.setOnAction(event -> {
             Menu(primaryStage);     
         });
             
-        VBox vbox = new VBox(titulo,listView,  escogerButton,eliminarButton, atrasButton);
+        VBox vbox = new VBox(titulo,listView,eliminarButton, atrasButton);
         vbox.setAlignment(Pos.CENTER);
         vbox.setSpacing(10);
 

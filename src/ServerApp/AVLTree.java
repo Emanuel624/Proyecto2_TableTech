@@ -40,6 +40,81 @@ public class AvlTree<T extends Comparable<? super T>> implements Serializable{
         return leftNodeHeight > rightNodeHeight ? leftNodeHeight : rightNodeHeight;
     }
     
+    
+    public boolean contains(T element) {
+        return contains(element, rootNode);
+    }
+
+    private boolean contains(T element, AvlNode<T> node) {
+        if (node == null) {
+            return false;
+        }
+
+        int cmp = element.compareTo(node.element);
+
+        if (cmp < 0) {
+            return contains(element, node.leftChild);
+        } else if (cmp > 0) {
+            return contains(element, node.rightChild);
+        } else {
+            return true;
+        }
+    }
+    
+    // Remover elemento metodo
+    public void removeElement(T element) {
+        rootNode = removeElement(element, rootNode);
+    }
+    
+    // lógica para remover un nodo
+    private AvlNode<T> removeElement(T element, AvlNode<T> current) {
+        if (current == null) {
+            return null;
+        } else if (element.compareTo(current.element) < 0) {
+            current.leftChild = removeElement(element, current.leftChild);
+            if (getHeight(current.rightChild) - getHeight(current.leftChild) == 2) {
+                if (getHeight(current.rightChild.rightChild) >= getHeight(current.rightChild.leftChild)) {
+                    current = rotateWithRightChild(current);
+                } else {
+                    current = doubleWithRightChild(current);
+                }
+            }
+        } else if (element.compareTo(current.element) > 0) {
+            current.rightChild = removeElement(element, current.rightChild);
+            if (getHeight(current.leftChild) - getHeight(current.rightChild) == 2) {
+                if (getHeight(current.leftChild.leftChild) >= getHeight(current.leftChild.rightChild)) {
+                    current = rotateWithLeftChild(current);
+                } else {
+                    current = doubleWithLeftChild(current);
+                }
+            }
+        } else {
+            if (current.leftChild != null && current.rightChild != null) {
+                // the node to remove has two children
+                AvlNode<T> successor = getSuccessor(current);
+                current.element = successor.element;
+                current.rightChild = removeElement(successor.element, current.rightChild);
+            } else {
+                // the node to remove has one or zero children
+                current = (current.leftChild != null) ? current.leftChild : current.rightChild;
+            }
+        }
+        if (current != null) {
+            current.height = getMaxHeight(getHeight(current.leftChild), getHeight(current.rightChild)) + 1;
+        }
+        return current;
+    }
+
+    // create getSuccessor() method to find the successor inorden of a node
+    private AvlNode<T> getSuccessor(AvlNode<T> current) {
+        AvlNode<T> node = current.rightChild;
+        while (node.leftChild != null) {
+            node = node.leftChild;
+        }
+        return node;
+    }
+
+    
     //Metodos creados para desplegar la información en la GUI correspondiente
     public ArrayList<T> inOrderTraversal() {
         ArrayList<T> list = new ArrayList<>();
