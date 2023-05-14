@@ -506,6 +506,8 @@ private static void procesarPedidos() {
                     int progreso = (tiempoTranscurrido.get() * 100) / tiempoTotalPreparacion.get();
                     pedido.setProgreso(progreso);
                     System.out.println("Progreso del pedido: " + progreso + "%");
+                    int tiempoRestante = tiempoTotalPreparacion.get() - tiempoTranscurrido.get();
+                    System.out.println("Progreso del pedido: " + progreso + "%, Tiempo restante: " + tiempoRestante + " segundos");
 
                     int rangoProgresoActual = progreso / 25;
                     if (rangoProgresoActual > rangoProgresoAnterior.get()) {
