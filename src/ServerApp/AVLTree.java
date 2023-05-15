@@ -3,48 +3,92 @@ package ServerApp;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * @authors Randall Bryan Bolañoz López, Octavio Sanchez Soto, Emanuel Chavarría Hernández.
+ * @version 1.0
+ */
+
+/**
+ * Esta clase publica, se relaciona con la implementación desde 0, de la estructura lineal para un Arbol AVL como tal, ademas de ser serializable para poder ser enviado y recibo con sockets.
+ * @param <T> este parametro permite que a la clase como tal se le puedan agregar, modifcar o eliminar elementos
+ */
 public class AvlTree<T extends Comparable<? super T>> implements Serializable{
     private AvlNode<T> rootNode;
-
-    //Constructor to set null value to the rootNode
+    /**
+     * Publico de la clase, para poder comenzar con la creación del arbol AVL como tal.
+     */
     public AvlTree() {
         rootNode = null;
     }
 
-    //create removeAll() method to make AVL Tree empty
+    
+    /**
+     * Método que remueve todos los nodos del arbol AVL.
+     */
     public void removeAll()
     {
         rootNode = null;
     }
 
-    // create checkEmpty() method to check whether the AVL Tree is empty or not
+    
+    /**
+     * Booleano público que verfica si la raíz del arbol AVL, está vacía.
+     * @return un nulo de la raíz del arbol.
+     */
     public boolean checkEmpty() {
         return rootNode == null;
     }
 
-    // create insertElement() to insert element to the AVL Tree
+    
+    /**
+     * Método que permite insertar elemento al arbol.
+     * @param element el elemento para agregar como tal.
+     */
     public void insertElement(T element)
     {
         rootNode = insertElement(element, rootNode);
     }
 
-    //create getHeight() method to get the height of the AVL Tree
+    
+    /**
+     * int privado, que permite conocer la altura del arbol AVL.
+     * @param node parametro que permite conocer el nodo al cual se desea conocer su altura.
+     * @return la altura como tal.
+     */
     private int getHeight(AvlNode<T> node )
     {
         return node == null ? -1 : node.height;
     }
 
-    //create maxNode() method to get the maximum height from left and right node
+    
+    /**
+     * int privado, que permite conocer la altura máxima del arbol AVL.
+     * @param leftNodeHeight parametro del nodo izquierdo que se quiere evaluar.
+     * @param rightNodeHeight parametro del nodo derecho que se quiere evaluar.
+     * @return retorna la altura maxima como tal
+     */
     private int getMaxHeight(int leftNodeHeight, int rightNodeHeight)
     {
         return leftNodeHeight > rightNodeHeight ? leftNodeHeight : rightNodeHeight;
     }
     
     
+    /**
+     * booleano public que permite conocer si un elemento se encuentra o no dentro del arbol AVL.
+     * @param element parametro que contiene el elmento por compara como tal.
+     * @return retorna false o verdadero
+     */
     public boolean contains(T element) {
         return contains(element, rootNode);
     }
-
+    
+    
+    /**
+     * Lógica detras del public de contains.
+     * @param element parametro que contiene el elmento por compara como tal.
+     * @param node el comienzo de nodos por el cual se va a comparar.
+     * @return un valor booleano.
+     */
     private boolean contains(T element, AvlNode<T> node) {
         if (node == null) {
             return false;
@@ -61,12 +105,22 @@ public class AvlTree<T extends Comparable<? super T>> implements Serializable{
         }
     }
     
-    // Remover elemento metodo
+    
+    /**
+     * Método publico que permite remover elementos del arbol AVL.
+     * @param element parametro del elemento como tal que se quiere remover.
+     */
     public void removeElement(T element) {
         rootNode = removeElement(element, rootNode);
     }
     
-    // lógica para remover un nodo
+    
+    /**
+     * Lógica detras del public de "removeElement".
+     * @param element parametro del elemento como tal que se quiere remover.
+     * @param current paramentro del nodo del arbol AVL actual para trabjar la comparación y el proceso de eliminicación.
+     * @return el arbol con el elemento eliminado.
+     */
     private AvlNode<T> removeElement(T element, AvlNode<T> current) {
         if (current == null) {
             return null;
@@ -104,8 +158,13 @@ public class AvlTree<T extends Comparable<? super T>> implements Serializable{
         }
         return current;
     }
-
-    // create getSuccessor() method to find the successor inorden of a node
+    
+    
+    /**
+     * Privado del arbol AVL, que permite conocer el nodo sucesor al actual que se estaría evaluando
+     * @param current parametro es conocer el nodo que se esta trabajando actualmente.
+     * @return retorna el nodo sucesor.
+     */
     private AvlNode<T> getSuccessor(AvlNode<T> current) {
         AvlNode<T> node = current.rightChild;
         while (node.leftChild != null) {
@@ -115,13 +174,22 @@ public class AvlTree<T extends Comparable<? super T>> implements Serializable{
     }
 
     
-    //Metodos creados para desplegar la información en la GUI correspondiente
+    /**
+     * Public del arrayList implementado por llava, el cual permite obtener todos los datos de todos los elementos de la lista, para poder ser enviado por Sockets evitando errores.
+     * @return la lista de todos los elementos del arbol AVL.
+     */
     public ArrayList<T> inOrderTraversal() {
         ArrayList<T> list = new ArrayList<>();
         inOrderTraversal(this.rootNode, list);
         return list;
     }
-
+    
+    
+    /**
+     * Método con la lógica detras del public de inOrderTraversal.
+     * @param node parametro con el nodo del arbol AVL.
+     * @param list parametro que conlleva una arraList para poder añadir elementos a el mismo.
+     */
     private void inOrderTraversal(AvlNode<T> node, ArrayList<T> list) {
         if (node != null) {
             inOrderTraversal(node.leftChild, list);
@@ -131,7 +199,12 @@ public class AvlTree<T extends Comparable<? super T>> implements Serializable{
     }
 
     
-    //create insertElement() method to insert data in the AVL Tree recursively
+    /**
+     * Privado que contiene la lógica de "insertElement" 
+     * @param element parametro que contiene el elemento por incertar
+     * @param current parametro relacionado con el nodo actualmente trabajdo
+     * @return retorna el arbol AVL con el nuevo elemento añadido y ordenado correctamente.
+     */
     private AvlNode<T> insertElement(T element, AvlNode<T> current) {
         if (current == null) {
             current = new AvlNode<T>(element);
@@ -154,13 +227,18 @@ public class AvlTree<T extends Comparable<? super T>> implements Serializable{
                 }
             }
         } else {
-            // if the element is already present in the tree, we will do nothing
+            // Si el elemento ya esta en el arbol no hacer nada.
         }
         current.height = getMaxHeight(getHeight(current.leftChild), getHeight(current.rightChild)) + 1;
         return current;
     }
 
-    // creating rotateWithLeftChild() method to perform rotation of binary tree node with left child
+    
+    /**
+     * Priavdo que permite hacer rotaciones con el hijo izquierdo.
+     * @param node2 parametro que utiliza un nodo para poder recorrer y rotar el arbol AVL.
+     * @return retorna la rotación del nodo dentro del arbol AVL.
+     */
     private AvlNode<T> rotateWithLeftChild(AvlNode<T> node2) {
         AvlNode<T> node1 = node2.leftChild;
         node2.leftChild = node1.rightChild;
@@ -170,7 +248,12 @@ public class AvlTree<T extends Comparable<? super T>> implements Serializable{
         return node1;
     }
 
-    // creating rotateWithRightChild() method to perform rotation of binary tree node with right child
+    
+    /**
+     * Priavdo que permite hacer rotaciones con el hijo derecho.
+     * @param node1 parametro que utiliza un nodo para poder recorrer y rotar el arbol AVL.
+     * @return retorna la rotación del nodo dentro del arbol AVL.
+     */
     private AvlNode<T> rotateWithRightChild(AvlNode<T> node1) {
         AvlNode<T> node2 = node1.rightChild;
         node1.rightChild = node2.leftChild;
@@ -180,16 +263,25 @@ public class AvlTree<T extends Comparable<? super T>> implements Serializable{
         return node2;
     }
 
-    //create doubleWithLeftChild() method to perform double rotation of binary tree node. This method first rotate the left child with its right child, and after that, node3 with the new left child
+    
+    /**
+     * Priavdo que permite hacer dobles rotaciones con el hijo izquierdo.
+     * @param node3 parametro que utiliza un nodo para poder recorrer y rotar el arbol AVL.
+     * @return retorna la doble rotación del nodo dentro del arbol AVL.
+     */
     private AvlNode<T> doubleWithLeftChild(AvlNode<T> node3) {
         node3.leftChild = rotateWithRightChild( node3.leftChild );
         return rotateWithLeftChild( node3 );
     }
 
-    //create doubleWithRightChild() method to perform double rotation of binary tree node. This method first rotate the right child with its left child and after that node1 with the new right child
+    
+    /**
+     * Priavdo que permite hacer dobles rotaciones con el hijo derecho.
+     * @param node1 parametro que utiliza un nodo para poder recorrer y rotar el arbol AVL.
+     * @return retorna la doble rotación del nodo dentro del arbol AVL.
+     */
     private AvlNode<T> doubleWithRightChild(AvlNode<T> node1) {
         node1.rightChild = rotateWithLeftChild( node1.rightChild );
         return rotateWithRightChild( node1 );
     }
-    //Holasda
 }

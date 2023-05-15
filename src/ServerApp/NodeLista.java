@@ -2,7 +2,12 @@ package ServerApp;
 import java.io.Serializable;
 
 
-
+/**
+ * Esta Clase publica, contiene el elemento nodo para poder recorrer las clases de Listas creadas desde 0.
+ * @authors Randall Bryan Bolañoz López, Octavio Sanchez Soto, Emanuel Chavarría Hernández.
+ * @version 1.0
+ * @param <C> elemento que se puede añadir, modficar o eliminar dentro del nodo.
+ */
 public class NodeLista<C> implements Serializable{
 
 

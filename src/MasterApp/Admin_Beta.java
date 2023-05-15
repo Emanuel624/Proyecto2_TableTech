@@ -35,11 +35,26 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 
+/**
+ * @authors Randall Bryan Bolañoz López, Octavio Sanchez Soto, Emanuel Chavarría Hernández.
+ * @version 1.0
+ */
 
+
+/**
+ * Esta clase presenta la GUI necesaria para el funcionamiento de la MasterApp, la cual se comunica por medio de sockets para lo lógica del sistema en general.
+ */
 public class Admin_Beta extends Application {
+    //Objetos neceasrios para el funcionamienteo de esta clase
     private ObjectOutputStream out;
     private ObjectInputStream in;
-      
+    
+    
+    /**
+     * Método encargado de iniciar la aplicación GUI como tal.
+     * @param stage permite presentar y hacer el "Launch" de la aplicación GUI, por medio de JavaFX
+     * @throws Exception en caso de que surja un error en la aplicación a la hora de ejecutarse
+     */
     @Override
     public void start(Stage stage) throws Exception {
         
@@ -81,7 +96,6 @@ public class Admin_Beta extends Application {
         Socket socket = new Socket("localhost", 8080);
         
         // Crear el stream de salida para enviar la información al servidor
-        
         out = new ObjectOutputStream(socket.getOutputStream());
         
         in = new ObjectInputStream(socket.getInputStream());
@@ -105,7 +119,7 @@ public class Admin_Beta extends Application {
             }
         });
        
-
+        //Creación del nuevo hilo necesario para recibir las "respuestas" del servidor.
         Thread thread = new Thread(() -> {
             try {
 
@@ -131,9 +145,10 @@ public class Admin_Beta extends Application {
                         }
                     }
                     
+                    //Verficar si el objeto de la instancia "Lista Enlazada"
                     if (obj instanceof LinkedList) {
                         LinkedList<String> adminList = (LinkedList<String>) obj;
-                        System.out.println("Platillos asdasd: " + adminList);
+                        System.out.println("Platillos: " + adminList);
 
                         // Recibir el valor booleano
                         boolean value = in.readBoolean();
@@ -151,7 +166,7 @@ public class Admin_Beta extends Application {
                         }    
                     }
                     
-                    //Recibir la información de los platillos 
+                    //Recibir la información de los platillos, verficaindo si ña instacia es de tipo ArrayList.
                     if (obj instanceof ArrayList) {
                         ArrayList<String> adminPlatillo = (ArrayList<String>) obj;
                         System.out.println("Platillos asdasd: " + adminPlatillo);
@@ -171,14 +186,7 @@ public class Admin_Beta extends Application {
                         });
                         }    
                     }
- 
-
-                    
-                                  
-                    // Si el objeto recibido es de otro tipo, hacer algo con él según sea necesario
                 }
-
-
             } catch (IOException | ClassNotFoundException ex) {
                 System.err.println("Error receiving data from server: " + ex.getMessage());
             }
@@ -207,8 +215,12 @@ public class Admin_Beta extends Application {
     
     
     //Método para mostar venta que agrega admins
+    /**
+     * Método el cual se muestra la lógica para agregar administradores mediante una GUI.
+     * @param primaryStage este parámetro recibe el "Escenario" sobre el cual se va a ejectuar la nueva versión actualizada de GUI. 
+     */
     private void AgregarAdmins(Stage primaryStage) {
-        
+        //Objetos y parametros utilizados para el funcionamiento de este método.
         Label titulo = new Label("Agregar administrador");
         
         Label nombreLabel = new Label("Nombre:");
@@ -236,7 +248,7 @@ public class Admin_Beta extends Application {
                 } else {
                     AgregarAdmins_Alpha RegistrerInfo = new AgregarAdmins_Alpha(username, password);
                     out.writeObject(RegistrerInfo);
-                    out.flush(); 
+                    out.flush(); //Socket de envio de datos 
                 }
 
                 // Limpiar los campos de usuario y contraseña
@@ -250,7 +262,7 @@ public class Admin_Beta extends Application {
         
         Button atrasButton = new Button("Regresar");
         atrasButton.setOnAction(event -> {
-            Menu(primaryStage);     
+            Menu(primaryStage); //Se regresa al método con el "Menú principal".     
         });
             
         VBox vbox = new VBox(titulo, nombreLabel, nombreTextField, contrasenaLabel, contrasenaPasswordField, agregarButton, atrasButton);
@@ -266,8 +278,15 @@ public class Admin_Beta extends Application {
         primaryStage.show();
     }
     
+    
     //Método para mostar venta que agrega admins
+    /**
+     * Método el cual se muestra la lógica para modificar administradores mediante una GUI.
+     * @param primaryStage este parámetro recibe el "Escenario" sobre el cual se va a ejectuar la nueva versión actualizada de GUI. 
+     * @param adminList este parametro es recibido mediante sockets y en formatos compatibles, el cual cuenta con la información "actual" de los administradores para luego ser modificada adelante en este método
+     */
     private void ModificarAdmins(Stage primaryStage, LinkedList<String> adminList) {
+        //Obejtos y varibles utilizadas para la ejecución correcta de este método.
         System.out.println(adminList);
 
         Label titulo = new Label("Escoge el administrador que quieres modificar");
@@ -304,7 +323,7 @@ public class Admin_Beta extends Application {
                         String adminNoModContraseña = sinMod[1];
 
                         ModificarAdminInfo modAdminInfo = new ModificarAdminInfo(adminNoModNombre, adminNoModContraseña, username, password);
-                        out.writeObject(modAdminInfo);
+                        out.writeObject(modAdminInfo); //Socket de envio de datos
                         out.flush();       
                     }
                 } else {
@@ -334,7 +353,7 @@ public class Admin_Beta extends Application {
         Button atrasButton = new Button("Regresar");
         atrasButton.setAlignment(Pos.CENTER);
         atrasButton.setOnAction(event -> {
-            Menu(primaryStage);
+            Menu(primaryStage); //Se regresa al método con el "Menú principal".
         });
 
         VBox vbox = new VBox(titulo, listView, nombreLabel, nombreTextField, contrasenaLabel, contrasenaPasswordField, escoger, modButton, atrasButton);
@@ -347,13 +366,19 @@ public class Admin_Beta extends Application {
         container.setAlignment(Pos.CENTER);
 
         primaryStage.setScene(new Scene(container, 500, 670));
-        primaryStage.show();
+        primaryStage.show(); //Se muestra la nueva GUI.
     }
 
 
    
     //Metodo de GUI para visualizar eliminar Admins
+    /**
+     * Método el cual se muestra la lógica para eliminar administradores mediante una GUI.
+     * @param primaryStage este parámetro recibe el "Escenario" sobre el cual se va a ejectuar la nueva versión actualizada de GUI. 
+     * @param adminList este parametro es recibido mediante sockets y en formatos compatibles, el cual cuenta con la información "actual" de los administradores para luego ser modificada adelante en este método 
+     */
     private void elminarAdmins(Stage primaryStage, LinkedList<String> adminList) {
+        //Variables y objetos necesarioas para el funcionamiento de este método
         Label titulo = new Label("Escoge el administrador que quieres eliminar");
         titulo.setAlignment(Pos.CENTER);
       
@@ -377,7 +402,7 @@ public class Admin_Beta extends Application {
 
                 // Crear un objeto con la información del elemento seleccionado y enviarlo al servidor
                 EliminarAdmin eliminadoInfo = new EliminarAdmin(username, password);
-                out.writeObject(eliminadoInfo);
+                out.writeObject(eliminadoInfo); //Socket en el cual se envia la información.
                 out.flush();
 
             } catch (IOException ex) {
@@ -388,7 +413,7 @@ public class Admin_Beta extends Application {
         Button atrasButton = new Button("Regresar");
         atrasButton.setAlignment(Pos.CENTER);
         atrasButton.setOnAction(event -> {
-            Menu(primaryStage);     
+            Menu(primaryStage); //Se regresa al método con el "Menú principal".     
         });
 
         
@@ -408,6 +433,10 @@ public class Admin_Beta extends Application {
     
 ///////////////////////////////////////////////////////////////////////////////Metodos platillos//////////////////////////////    
     //Metodos para agregar platillos
+    /**
+     * Método el cual se muestra la lógica para agregar platillos mediante una GUI.
+     * @param primaryStage este parámetro recibe el "Escenario" sobre el cual se va a ejectuar la nueva versión actualizada de GUI.
+     */
     private void AgregarPlatillos(Stage primaryStage) {
         
         Label titulo = new Label("Agregar Platillo");
@@ -452,7 +481,7 @@ public class Admin_Beta extends Application {
 
                     // Crea un objeto Platillos con los valores de los campos de texto y lo envía al servidor
                     Platillos nuevoPlatillo = new Platillos(nombre, caloriasInt, tiempoInt, precioInt);
-                    out.writeObject(nuevoPlatillo);
+                    out.writeObject(nuevoPlatillo); //Socket con el envio de datos.
                     out.flush();
 
                     // Limpia los campos de texto después de enviar la información al servidor
@@ -469,7 +498,7 @@ public class Admin_Beta extends Application {
         
         Button atrasButton = new Button("Regresar");
         atrasButton.setOnAction(event -> {
-            Menu(primaryStage);     
+            Menu(primaryStage); //Se regresa al método con el "Menú principal".     
         });
             
         VBox vbox = new VBox(titulo, nombreLabel, nombreTextField,  calorias,caloriasTextField,preparacion,preparacionTextField,precio,precioTextField,agregarButton, atrasButton);
@@ -485,9 +514,15 @@ public class Admin_Beta extends Application {
         primaryStage.show();
     }
     
+    
     //Metodo para modificar platillos
+    /**
+     * Método el cual se muestra la lógica para modificar platillos mediante una GUI.
+     * @param primaryStage este parámetro recibe el "Escenario" sobre el cual se va a ejectuar la nueva versión actualizada de GUI. 
+     * @param adminPlatillo este parametro recibe mediante formatos compatibles, la informacón de los platillos mediantes sockets, necesarios para ser modificados mas adelante en la apliación.
+     */
     private void modificarPlatillos(Stage primaryStage, ArrayList<String> adminPlatillo) {
-        
+        //Objetos y parametros necesarios para el funcionamiento del método.
         Label titulo = new Label("Modifica un platillo");
         
         // Crear una ListView
@@ -562,7 +597,7 @@ public class Admin_Beta extends Application {
                                                
 
                         ModificarPlatillosInfo modPlatillosInfo = new ModificarPlatillosInfo(PlatilloNoModNombre, intPlatilloNoModCalorias, intPlatilloNoModTiempo, intPlatilloNoModPrecio, nombre, caloriasInt, preparacionInt, precioInt);
-                        out.writeObject(modPlatillosInfo);
+                        out.writeObject(modPlatillosInfo); //Socket con el envio de datos.
                         out.flush();       
                     }
                 } else {
@@ -583,7 +618,7 @@ public class Admin_Beta extends Application {
         
         Button atrasButton = new Button("Regresar");
         atrasButton.setOnAction(event -> {
-            Menu(primaryStage);     
+            Menu(primaryStage); //Se regresa al método con el "Menú principal".     
         });
             
         VBox vbox = new VBox(titulo,listView, nombreLabel, nombreTextField, calorias,caloriasTextField,preparacion,preparacionTextField,precio,precioTextField,escogerButton,modButton, atrasButton);
@@ -600,6 +635,11 @@ public class Admin_Beta extends Application {
     }
     
     //Metodo de GUI para mostrar como eliminar un platillo
+    /**
+     * Método el cual se muestra la lógica para elminar platillos mediante una GUI.
+     * @param primaryStage este parámetro recibe el "Escenario" sobre el cual se va a ejectuar la nueva versión actualizada de GUI. 
+     * @param adminPlatillo este parametro recibe mediante formatos compatibles, la informacón de los platillos mediantes sockets, necesarios para ser modificados mas adelante en la apliación.
+     */
     private void eliminarPlatillos(Stage primaryStage, ArrayList<String> adminPlatillo) {
         
         Label titulo = new Label("Elimina un platillo");
@@ -629,7 +669,7 @@ public class Admin_Beta extends Application {
 
                 // Crear un objeto con la información del elemento seleccionado y enviarlo al servidor
                 EliminarPlatillo PlatInfoEliminado = new EliminarPlatillo(nombre, caloriasInt, preparacionInt, precioInt);
-                out.writeObject(PlatInfoEliminado);
+                out.writeObject(PlatInfoEliminado);//Socket con el envio de datos.
                 out.flush();
 
             } catch (IOException ex) {
@@ -640,7 +680,7 @@ public class Admin_Beta extends Application {
 
         Button atrasButton = new Button("Regresar");
         atrasButton.setOnAction(event -> {
-            Menu(primaryStage);     
+            Menu(primaryStage); //Se regresa al método con el "Menú principal".    
         });
             
         VBox vbox = new VBox(titulo,listView,eliminarButton, atrasButton);
@@ -659,7 +699,12 @@ public class Admin_Beta extends Application {
     
         
     //Metodo para el menú principal de eleccción
+    /**
+     * Método el cual se muestra la GUI "principal" con el menú para decidir que acción realizar.
+     * @param primaryStage este parámetro recibe el "Escenario" sobre el cual se va a ejectuar la nueva versión actualizada de GUI. 
+     */
     private void Menu(Stage primaryStage) {
+        //Objetos y parametros necesarios para el funcionamiento del método.
         btnAgregarAdmin = new Button("Agregar");
         btnModificarAdmin = new Button("Modificar");
         btnEliminarAdmin = new Button("Eliminar");
@@ -668,7 +713,7 @@ public class Admin_Beta extends Application {
         btnModificarPlatillo = new Button("Modificar");
         btnEliminarPlatillo = new Button("Eliminar");
 
-        
+
         btnAgregarAdmin.setOnAction(event -> {
             AgregarAdmins(primaryStage);
         });
@@ -759,11 +804,12 @@ public class Admin_Beta extends Application {
         primaryStage.show();
     }
     
-    
+    /**
+     * Método estático para poder lanzar la ejecución de la GUI como tal.
+     * @param args parametro necesario para la ejecuín del main. 
+     */
     public static void main(String[] args) {
         launch(args);
     }
-
-
 }
 

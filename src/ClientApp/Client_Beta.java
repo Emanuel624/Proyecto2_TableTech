@@ -35,8 +35,17 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Client_Beta extends Application {
+/**
+ * @authors Randall Bryan Bolañoz López, Octavio Sanchez Soto, Emanuel Chavarría Hernández.
+ * @version 1.0
+ */
 
+
+/**
+ * Esta clase presenta la GUI necesaria para el funcionamiento de la ClientApp, la cual se comunica por medio de sockets para lo lógica del sistema en general.
+ */
+public class Client_Beta extends Application {
+    //Se presentan algunos parametros generales para el funcionamiento de la aplicación.
     private ListaEnlazadaView<Platillos> listViewPlatillos;
     private ListaEnlazadaView<Platillos> listViewCarrito;
     private Button btnAgregar;
@@ -48,17 +57,22 @@ public class Client_Beta extends Application {
     private ListView<String> listViewPedidosActivos;
     private ListView<String> listViewPedidosPendientes;
     
-
     private Socket socket;
     private ObjectInputStream in;
-
+    
+    
+    /**
+     * Método encargado de iniciar la aplicación GUI como tal.
+     * @param stage permite presentar y hacer el "Launch" de la aplicación GUI, por medio de JavaFX
+     * @throws Exception en caso de que surja un error en la aplicación a la hora de ejecutarse
+     */
     @Override
     public void start(Stage stage) throws Exception {
         listViewPedidosActivos = new ListView<>();
         listViewPedidosPendientes = new ListView<>();
 
        
-        // Crear los nodos necesarios
+        // Crear los nodos necesarios para la ventana de inicio de sesión
         Label lblTitle = new Label("Inicio de Sesión Clientes");
         Label lblUser = new Label("Usuario:");
         Label lblPass = new Label("Contraseña:");
@@ -93,6 +107,8 @@ public class Client_Beta extends Application {
 
         // Agregar manejador de eventos al botón Iniciar Sesión
         btnLogin.setOnAction(event -> {
+            
+            //Mediante un try/catcht se manda un socket para verificar los datos de inicio de sesión
             try {
                 String username = txtUser.getText();
                 String contrasena = txtPass.getText();
@@ -103,7 +119,8 @@ public class Client_Beta extends Application {
                 System.err.println("Error sending login info to server: " + ex.getMessage());
             }
         });
-
+        
+        //Mediante un nuevo hilo, se recibe información para poder realizar acciones en la GUI de la aplicaicón cliente
         Thread thread = new Thread(() -> {
             try {
                 // Crear el socket y conectar al servidor
@@ -131,8 +148,14 @@ public class Client_Beta extends Application {
         thread.start();
         stage.show();
     }
-
+    
+    
+    /**
+     * Se crea un nuevo método, para poder cambiar la aparencia así como los sockets enviados, con el objetigo de mostrar una ventana que muestre los pedidos y formas de realizarlos
+     * @param primaryStage es el parametro utilizado para poder mostrar la GUI como tal.
+     */
     private void mostrarVentanaPedidos(Stage primaryStage) {
+    //Diversas variables y objetos necesarios para el funcionamiento de este método.    
     listViewPlatillos = new ListaEnlazadaView<>();
     listViewCarrito = new ListaEnlazadaView<>();
     btnAgregar = new Button("Agregar al carrito");
@@ -183,14 +206,22 @@ public class Client_Beta extends Application {
     primaryStage.setScene(new Scene(hbox, 800, 400));
     primaryStage.show();
 }
-
+    
+    
+    /**
+     * Método encargado de agregar los platillos a la lista enlazada necesaria.
+     */
     private void agregarPlatillo() {
         Platillos seleccionado = listViewPlatillos.getListView().getSelectionModel().getSelectedItem();
         if (seleccionado != null) {
             listViewCarrito.add(seleccionado);
         }
     }
-
+    
+    
+    /**
+     * Método que se encarga de realizar la función de realizar el pedido como tal.
+     */
     private void hacerPedido() {
     ListaEnlazada<Platillos> pedidoPlatillos = listViewCarrito.getListaEnlazada();
     Pedido pedido = new Pedido(pedidoPlatillos); // Asumiendo que Pedido tiene un constructor que toma ListaEnlazada<Platillos>
@@ -210,8 +241,13 @@ public class Client_Beta extends Application {
     }
 }
 
-
+    
+/**
+ * Método que se encarga de recibir los mensaje de respuesta recibidos por medios de sockets del servidor hacia la clase cliente, todo esto mediante un nuevo hilo que solamente
+ * recibe mensajes de respuesta.
+ */
 private void recibirMensajesServidor() {
+    //Creación del nuevo hilo
     Thread thread = new Thread(() -> {
         try {
             DataInputStream inMensaje = new DataInputStream(socket.getInputStream());
@@ -237,6 +273,12 @@ private void recibirMensajesServidor() {
 
     thread.start();
 }
+   
+
+    /**
+     * ListaEnlazada encargada de leer el JSON con los platillos.
+     * @return retorna la lista enlazada con los datos que se lee del JSON de platillos.
+     */
     private ListaEnlazada<Platillos> leerPlatillosJSON() {
         try {
             String jsonContent = new String(Files.readAllBytes(Paths.get("platillos.json")));
@@ -253,17 +295,29 @@ private void recibirMensajesServidor() {
             return null;
         }
     }
+    
+    
+/**
+ * Lógica detras del metodo que se encarga de guardar el pedido realizar en el historial.
+ * @param pedido este parametro es necesaria ya que es la inforamción que se guarda como pedido.
+ */    
 private void guardarPedidoEnHistorial(Pedido pedido) {
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     ArrayList<Pedido> pedidos = leerHistorialPedidos();
     pedidos.add(pedido);
-    
+
     try (FileWriter writer = new FileWriter("historial_pedidos.json")) {
         gson.toJson(pedidos, writer);
     } catch (IOException e) {
         e.printStackTrace();
     }
 }
+
+
+/**
+ * Un arrayList necesarios para leer el historia de pedidos para evitar compatibilidades.
+ * @return la misma lista enlazada con la información obtenida depues de leer el archivo Json.
+ */
 private ArrayList<Pedido> leerHistorialPedidos() {
     try {
         String jsonContent = new String(Files.readAllBytes(Paths.get("historial_pedidos.json")));
@@ -276,7 +330,12 @@ private ArrayList<Pedido> leerHistorialPedidos() {
     }
 }
 
+
+/**
+ * Este método muestra la ventana GUI, en la que se enseñan los datos relacionados al historial de pedidos.
+ */
 private void mostrarVentanaHistorial() {
+    //Variables y objetos necesarios para el funcionamiento del método
     Stage historialStage = new Stage();
     historialStage.setTitle("Historial de Pedidos");
 
@@ -293,6 +352,11 @@ private void mostrarVentanaHistorial() {
     historialStage.show();
 }
 
+
+    /**
+     * Método estático para poder lanzar la ejecución de la GUI como tal.
+     * @param args parametro necesario para la ejecuín del main.
+     */
     public static void main(String[] args) {
         launch(args);
     }

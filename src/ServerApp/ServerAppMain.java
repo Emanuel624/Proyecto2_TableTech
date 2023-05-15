@@ -30,10 +30,26 @@ import java.util.List;
 
 import org.w3c.dom.Node;
 
+/**
+ * @authors Randall Bryan Bolañoz López, Octavio Sanchez Soto, Emanuel Chavarría Hernández.
+ * @version 1.0
+ */
+
+/**
+ * Esta clase publica, es el "Main" del servidor, en el cual sucede toda la lógica del sistema.
+ */
 public class ServerAppMain {
     private static final Queue<Pedido> pedidosQueue = new Queue<>();
     private static Socket socket;
     
+    /**
+     * El método prinicpal el cual permite la ejecución de la lógica como tal.
+     * @param args parametro necesario para la ejecuín del main. 
+     * @throws ParserConfigurationException excepción en caso de error.
+     * @throws SAXException excepción en caso de error.
+     * @throws TransformerConfigurationException excepción en caso de error.
+     * @throws TransformerException excepción en caso de error.
+     */
     public static void main(String[] args) throws ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException {
         
         // Elementos necesario para la lectura del archivo XML dentro del server App
@@ -110,7 +126,7 @@ public class ServerAppMain {
                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
                // Crear el stream de salida para enviar la respuesta al cliente
                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-
+               
                 while (true) {
                     // Leer la información de inicio de sesión y mostrarla en la consola
                     Object obj = in.readObject();
@@ -477,7 +493,9 @@ public class ServerAppMain {
         }
     }
     
-
+/**
+ * Método privado y estatico el cual permite procesar los diversos pedidos de la clase ClientApp
+ */
 private static void procesarPedidos() {
     ArduinoLEDControl.iniciarArduino();
     while (true) {
@@ -556,27 +574,43 @@ private static void procesarPedidos() {
 }
 
 
-
+/**
+ * Método estático que se relaciona encer los leds cuando se está al 25%.
+ */
 private static void EncenderLuces25() {
     System.out.println("Encendiendo luces al 25%");
       // Implementar codigo de arduino
 }
 
+/**
+ * Método estático que se relaciona encer los leds cuando se está al 50%.
+ */
 private static void EncenderLuces50() {
     System.out.println("Encendiendo luces al 50%");
     // Implementar codigo de arduino
 }
 
+/**
+ * Método estático que se relaciona encer los leds cuando se está al 75%.
+ */
 private static void EncenderLuces75() {
     System.out.println("Encendiendo luces al 75%");
     // Implementar codigo de arduino
 }
 
+/**
+ * Método estático que se relaciona encer los leds cuando se está al 100%.
+ */
 private static void EncenderLuces100() {
     System.out.println("Encendiendo luces al 100%");
     // Implementar codigo de arduino
 }
 
+
+/**
+ * Méto estatico público relacionado a agregar pedidos a la cola
+ * @param pedido este paremetro requiero un objeto de tipo pedidos, para ser añadidos.
+ */
 public static void agregarPedido(Pedido pedido) {
     
     pedidosQueue.enqueue(pedido);
@@ -586,7 +620,11 @@ public static void agregarPedido(Pedido pedido) {
     ArduinoLEDControl.sumarUno();
     System.out.println("Pedido encolado: " + pedido);
 }
-//
+
+
+/**
+ * Método privado estático que envio un mensaje de "Listo" al clientApp.
+ */
 private static void enviarMensajeListo() {
     try {
         DataOutputStream outMensaje = new DataOutputStream(socket.getOutputStream());
@@ -598,6 +636,10 @@ private static void enviarMensajeListo() {
     }
 }
 
+/**
+ * Método estático que genera una espera entre las instrucciones que se le dan al Arduino
+ * @param milisegundos es el intervalo de tiempo que se desea utilizar.
+ */
 private static void esperar(int milisegundos) {
     try {
         Thread.sleep(milisegundos);

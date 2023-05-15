@@ -1,4 +1,4 @@
-package ServerApp;
+ package ServerApp;
 
 import java.util.function.Consumer;
 import java.io.Serializable;
@@ -6,7 +6,12 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 
-
+/**
+ * Clase publica asociada a la implementación desde 0, de una Lista Enlazada.
+ * @authors Randall Bryan Bolañoz López, Octavio Sanchez Soto, Emanuel Chavarría Hernández.
+ * @version 1.0
+ * @param <C> este parametro permite añadir, modificar y eliminar elementos de la lista Enlazada.
+ */
 public class ListaEnlazada<C> implements Serializable {
 
     private NodeLista<C> head;
@@ -19,29 +24,29 @@ public class ListaEnlazada<C> implements Serializable {
         this.head = null;
         this.size = 0;
 
-    } //Hola aaa
+    }
 
+    
     /**
      * metodo que verifica si la lista esta vacia
-     *
      * @return devuelve si el primer elemento es nulo
      */
     public boolean isEmpty() {
         return this.head == null;
     }
 
+    
     /**
      * metodo que dice el tamano de la lista
-     *
      * @return tamano int
      */
     public int size() {
         return this.size;
     }
 
+    
     /**
      * inserta una celda a la lista
-     *
      * @param data celda
      */
     public void add(C data) {
@@ -51,9 +56,9 @@ public class ListaEnlazada<C> implements Serializable {
         this.size++;
     }
 
+    
     /**
      * borra el primer elemento de la lista
-     *
      * @return nulo node
      */
     public NodeLista<C> deleteFirst() {
@@ -67,6 +72,7 @@ public class ListaEnlazada<C> implements Serializable {
         }
     }
 
+    
     /**
      * imprime la lista con sus elementos
      */
@@ -79,9 +85,9 @@ public class ListaEnlazada<C> implements Serializable {
 
     }
 
+    
     /**
      * metodo que elimina cierto valor especifico
-     *
      * @param searchValue valor a eliminar
      * @return nulo node
      */
@@ -103,7 +109,13 @@ public class ListaEnlazada<C> implements Serializable {
         }
         return null;
     }
-
+    
+    
+    /**
+     * Convertir la lista enlazada a un Array
+     * @param array necesita un arraya para poder convertir la lista en array.
+     * @return retorna el array con la información obtenida.
+     */
     public C[] toArray(C[] array) {
         if (array.length < size) {
             array = (C[]) java.lang.reflect.Array.newInstance(array.getClass().getComponentType(), size);
@@ -118,9 +130,9 @@ public class ListaEnlazada<C> implements Serializable {
         return array;
     }
 
+    
     /**
      * metodo que aplica una accion a cada uno de los nodos de la lista
-     *
      * @param action accion
      */
     public void forEach(Consumer<? super C> action) {
@@ -130,18 +142,34 @@ public class ListaEnlazada<C> implements Serializable {
     }
 
     
+    /**
+     * Iterador público utilizado para recorrer la lista Enlazada 
+     * @return la lista enlazada iterada
+     */
     public Iterator<C> iterator() {
         return new ListIterator();
     }
-
+    
+    
+    /**
+     * Clase privada del iterador, la cual contiene toda la lógica del contructor publico "iterator()".
+     */
     private class ListIterator implements Iterator<C> {
         private NodeLista<C> current = head;
-
+        
+        /**
+         * Booleano publico el cual obtien si hay un valor despues del actual.
+         * @return un valor booleano si tiene o no siguiente.
+         */
         @Override
         public boolean hasNext() {
             return current != null;
         }
-
+        
+        /**
+         * Obtiene el valor del nodo siguiente despues de verficar si, si tiene un valor disponible
+         * @return el valor obtenido como tal
+         */
         @Override
         public C next() {
             if (!hasNext()) {
@@ -154,7 +182,10 @@ public class ListaEnlazada<C> implements Serializable {
     }
 
     
-
+    /**
+     * Remueve el primer valor del arbol binario.
+     * @return retorna el arbol binario sin el primer nodo.
+     */
     public C removeFirst() {
         if (head != null) {
             C data = head.getData();
