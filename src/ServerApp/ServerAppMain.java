@@ -41,6 +41,7 @@ import org.w3c.dom.Node;
 public class ServerAppMain {
     private static final Queue<Pedido> pedidosQueue = new Queue<>();
     private static Socket socket;
+    private static int CantidadPedidos = 0;
     
     /**
      * El método prinicpal el cual permite la ejecución de la lógica como tal.
@@ -558,6 +559,8 @@ private static void procesarPedidos() {
                                 esperar(3000);
                                 enviarMensajeListo();
                                 esperar(3000);
+                                CantidadPedidos--;
+                                System.out.println("Cantidad de Pedidos Actuales con el nuevo pedido entregado: Pedidos  " + CantidadPedidos);
                                 break;
                         }
                     }
@@ -614,11 +617,13 @@ private static void EncenderLuces100() {
 public static void agregarPedido(Pedido pedido) {
     
     pedidosQueue.enqueue(pedido);
+    CantidadPedidos++;
     esperar(2000);
     ArduinoLEDControl.tocarBocina1Seg();
     esperar(3000);
     ArduinoLEDControl.sumarUno();
     System.out.println("Pedido encolado: " + pedido);
+    System.out.println("Cantidad de Pedidos Actuales " + CantidadPedidos);
 }
 
 
